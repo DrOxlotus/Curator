@@ -53,12 +53,12 @@ local function ScanInventory()
 					UseContainerItem(i, j);
 				else
 					if Contains(itemID) then -- This is an item that the player added to the database.
+						CalculateProfit(itemID, itemCount);
 						if sellPrice == 0 then
 							PickupContainerItem(i, j);
 							DeleteCursorItem();
 							deletedItemCount = deletedItemCount + 1;
 						else
-							print(itemLink);
 							local itemString = select(3, strfind(itemLink, "|H(.+)|h")); itemString = string.match(itemString, "(.*)%[");
 							CalculateProfit(itemString, itemCount);
 							UseContainerItem(i, j);
@@ -71,7 +71,7 @@ local function ScanInventory()
 end
 
 local function Add(arg)
-	if tonumber(arg) ~= nil then
+	--[[if tonumber(arg) ~= nil then
 		arg = tonumber(arg);
 	end
 	
@@ -84,7 +84,21 @@ local function Add(arg)
 	
 	CuratorSellListPerCharacter[#CuratorSellListPerCharacter + 1] = arg;
 	print("|cff00ccff" .. curator .. "|r: " .. "Added " .. arg .. ".");
-	return;
+	return;]]--
+	
+	local itemLinks = { strsplit("] [", arg) };
+	
+	for k, v in ipairs(itemLinks) do
+		local itemLink = select(2, GetItemInfo(itemLinks[k]));
+		if itemLink then
+			CuratorSellListPerCharacter[#CuratorSellListPerCharacter + 1] = itemLink;
+		end
+	end
+	
+	--[[for i in string.gmatch(arg, "|cff(.+)|r") do
+		print("|cff" .. i .. "|r"); print("\n");
+	end]]--
+	--print(select(3, strfind(arg, "|H(.+)|h")));
 end
 
 local function Remove(arg)
