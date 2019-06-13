@@ -11,7 +11,9 @@ local curator, curatorNS = ...;
 -- Module Variables
 local frame = CreateFrame("Frame");
 local isAddonLoaded = IsAddOnLoaded("Curator");
+local sellPrice = 0;
 local sellProfit = 0;
+local deletedItemCount = 0;
 
 -- Module Functions
 local function Contains(itemID)
@@ -34,7 +36,7 @@ local function Contains(itemID)
 end
 
 local function CalculateProfit(itemID, itemCount)
-	local sellPrice = itemCount * select(11, GetItemInfo(itemID));
+	sellPrice = itemCount * select(11, GetItemInfo(itemID));
 	sellProfit = sellProfit + sellPrice;
 end
 
@@ -45,15 +47,22 @@ local function ScanInventory()
 		for j = 1, GetContainerNumSlots(i) do
 			_, itemCount, _, quality, _, _, itemLink, _, _, itemID = GetContainerItemInfo(i, j);
 			
-			if quality then -- This accounts for empty slots.
+			if itemID then -- This accounts for empty slots and items without an ID.
 				if quality < 1 then -- This is a poor quality item.
 					CalculateProfit(itemID, itemCount);
 					UseContainerItem(i, j);
 				else
-					if Contains(itemID) then
-						local itemString = select(3, strfind(itemLink, "|H(.+)|h")); itemString = string.match(itemString, "(.*)%[");
-						CalculateProfit(itemString, itemCount);
-						UseContainerItem(i, j);
+					if Contains(itemID) then -- This is an item that the player added to the database.
+						if sellPrice == 0 then
+							PickupContainerItem(i, j);
+							DeleteCursorItem();
+							deletedItemCount = deletedItemCount + 1;
+						else
+							print(itemLink);
+							local itemString = select(3, strfind(itemLink, "|H(.+)|h")); itemString = string.match(itemString, "(.*)%[");
+							CalculateProfit(itemString, itemCount);
+							UseContainerItem(i, j);
+						end
 					end
 				end
 			end
@@ -124,7 +133,6 @@ end
 
 -- Event Registrations
 frame:RegisterEvent("MERCHANT_SHOW");
-frame:RegisterEvent("BAG_UPDATE");
 frame:RegisterEvent("MERCHANT_CLOSED");
 frame:RegisterEvent("PLAYER_LOGIN");
 
@@ -161,7 +169,9 @@ frame:SetScript("OnEvent", function(self, event, ...)
 			sellProfit = 0;
 		end
 		
-		matchedItems = 0;
-		itemsSold = 0;
+		if deletedItemCount > 0 then
+			print("|cff00ccff" .. curator .. "|r: " .. "Deleted " .. deletedItemCount .. " item(s) with no sell price.");
+			deletedItemCount = 0;
+		end
 	end
 end);
