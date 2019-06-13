@@ -14,6 +14,7 @@ local isAddonLoaded = IsAddOnLoaded("Curator");
 local sellPrice = 0;
 local sellProfit = 0;
 local deletedItemCount = 0;
+local doNotAdd = false;
 
 -- Module Functions
 local function Contains(itemID)
@@ -71,39 +72,57 @@ local function ScanInventory()
 end
 
 local function Add(arg)
-	--[[if tonumber(arg) ~= nil then
-		arg = tonumber(arg);
-	end
-	
-	for i = 1, #CuratorSellListPerCharacter do
-		if CuratorSellListPerCharacter[i] == arg then
-			print("|cff00ccff" .. curator .. "|r: " .. "This character already added " .. arg .. "!");
-			return;
+	for i in string.gmatch(arg, "%S+") do
+		if tonumber(i) ~= nil then
+			for j = 1, #CuratorSellListPerCharacter do
+				if CuratorSellListPerCharacter[j] == i then
+					print("|cff00ccff" .. curator .. "|r: " .. "This character already added " .. i .. "!");
+					doNotAdd = true;
+					break;
+				end
+			end
+			if not doNotAdd then
+				CuratorSellListPerCharacter[#CuratorSellListPerCharacter + 1] = i;
+				print("|cff00ccff" .. curator .. "|r: " .. "Added " .. i .. ".");
+			else
+				doNotAdd = false;
+			end
 		end
 	end
-	
-	CuratorSellListPerCharacter[#CuratorSellListPerCharacter + 1] = arg;
-	print("|cff00ccff" .. curator .. "|r: " .. "Added " .. arg .. ".");
-	return;]]--
 	
 	local itemLinks = { strsplit("] [", arg) };
 	
 	for k, v in ipairs(itemLinks) do
 		local itemLink = select(2, GetItemInfo(itemLinks[k]));
 		if itemLink then
-			CuratorSellListPerCharacter[#CuratorSellListPerCharacter + 1] = itemLink;
+			for i = 1, #CuratorSellListPerCharacter do
+				if CuratorSellListPerCharacter[i] == itemLink then
+					print("|cff00ccff" .. curator .. "|r: " .. "This character already added " .. itemLink .. "!");
+					doNotAdd = true;
+					break;
+				end
+			end
+			if not doNotAdd then
+				CuratorSellListPerCharacter[#CuratorSellListPerCharacter + 1] = itemLink;
+				print("|cff00ccff" .. curator .. "|r: " .. "Added " .. itemLink .. ".");
+			else
+				doNotAdd = false;
+			end
 		end
 	end
-	
-	--[[for i in string.gmatch(arg, "|cff(.+)|r") do
-		print("|cff" .. i .. "|r"); print("\n");
-	end]]--
-	--print(select(3, strfind(arg, "|H(.+)|h")));
 end
 
 local function Remove(arg)
-	if tonumber(arg) ~= nil then
-		arg = tonumber(arg);
+	for i in string.gmatch(arg, "%S+") do
+		if tonumber(i) ~= nil then
+			for j = 1, #CuratorSellListPerCharacter do
+				if CuratorSellListPerCharacter[j] == i then
+					table.remove(CuratorSellListPerCharacter, j);
+					print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. i .. ".");
+					break;
+				end
+			end
+		end
 	end
 	
 	for i = 1, #CuratorSellListPerCharacter do
@@ -126,22 +145,16 @@ local function Remove(arg)
 				end
 			end
 		else -- The object at this index is an item ID.
-			if CuratorSellListPerCharacter[i] == arg then -- The player passed an item ID to the command.
+			local argItemID = GetItemInfoInstant(arg);
+			if CuratorSellListPerCharacter[i] == argItemID then
 				table.remove(CuratorSellListPerCharacter, i);
 				print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. arg .. ".");
 				return;
-			else -- The player passed an item link to the command.
-				local argItemID = GetItemInfoInstant(arg);
-				if CuratorSellListPerCharacter[i] == argItemID then
-					table.remove(CuratorSellListPerCharacter, i);
-					print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. arg .. ".");
-					return;
-				end
 			end
 		end
 	end
 	
-	print("|cff00ccff" .. curator .. "|r: " .. arg .. " isn't in the list!");
+	--print("|cff00ccff" .. curator .. "|r: " .. arg .. " isn't in the list!");
 	return;
 end
 
