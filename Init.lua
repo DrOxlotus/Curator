@@ -11,6 +11,7 @@ local curator, curatorNS = ...;
 -- Module Variables
 local frame = CreateFrame("Frame");
 local isAddonLoaded = IsAddOnLoaded("Curator");
+local sellProfit = 0;
 
 -- Module Functions
 local function Contains(itemID)
@@ -30,6 +31,11 @@ local function Contains(itemID)
 			end
 		end
 	end
+end
+
+local function CalculateProfit(itemID, itemCount)
+	local sellPrice = itemCount * select(11, GetItemInfo(itemID));
+	sellProfit = sellProfit + sellPrice;
 end
 
 local function Add(arg)
@@ -95,6 +101,7 @@ end
 
 -- Event Registrations
 frame:RegisterEvent("MERCHANT_SHOW");
+frame:RegisterEvent("MERCHANT_CLOSED");
 frame:RegisterEvent("PLAYER_LOGIN");
 
 SLASH_curator1 = "/curator";
@@ -124,18 +131,28 @@ frame:SetScript("OnEvent", function(self, event, ...)
 		local _, _, _, quality, _, _, itemLink, _, _, itemID;
 		for i = 0, (NUM_BAG_FRAMES + 1) do -- The constant is equal to 4.
 			for j = 1, GetContainerNumSlots(i) do
-				_, _, _, quality, _, _, itemLink, _, _, itemID = GetContainerItemInfo(i, j);
+				_, itemCount, _, quality, _, _, itemLink, _, _, itemID = GetContainerItemInfo(i, j);
 				
 				if quality then -- This accounts for empty slots.
 					if quality < 1 then -- This is a poor quality item.
+						CalculateProfit(itemID);
 						UseContainerItem(i, j);
 					else
 						if Contains(itemID) then
+							local itemString = select(3, strfind(itemLink, "|H(.+)|h")); itemString = string.match(itemString, "(.*)%[");
+							CalculateProfit(itemString, itemCount);
 							UseContainerItem(i, j);
 						end
 					end
 				end
 			end
+		end
+	end
+	
+	if event == "MERCHANT_CLOSED" then
+		if sellProfit ~= 0 then
+			print("|cff00ccff" .. curator .. "|r: " .. "Sold all items for the following profit: " .. GetCoinTextureString(sellProfit, 12));
+			sellProfit = 0;
 		end
 	end
 end);
