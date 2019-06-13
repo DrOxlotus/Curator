@@ -38,6 +38,29 @@ local function CalculateProfit(itemID, itemCount)
 	sellProfit = sellProfit + sellPrice;
 end
 
+local function ScanInventory()
+	local _, _, _, quality, _, _, itemLink, _, _, itemID;
+	
+	for i = 0, (NUM_BAG_FRAMES + 1) do -- The constant is equal to 4.
+		for j = 1, GetContainerNumSlots(i) do
+			_, itemCount, _, quality, _, _, itemLink, _, _, itemID = GetContainerItemInfo(i, j);
+			
+			if quality then -- This accounts for empty slots.
+				if quality < 1 then -- This is a poor quality item.
+					CalculateProfit(itemID, itemCount);
+					UseContainerItem(i, j);
+				else
+					if Contains(itemID) then
+						local itemString = select(3, strfind(itemLink, "|H(.+)|h")); itemString = string.match(itemString, "(.*)%[");
+						CalculateProfit(itemString, itemCount);
+						UseContainerItem(i, j);
+					end
+				end
+			end
+		end
+	end
+end
+
 local function Add(arg)
 	if tonumber(arg) ~= nil then
 		arg = tonumber(arg);
@@ -101,6 +124,7 @@ end
 
 -- Event Registrations
 frame:RegisterEvent("MERCHANT_SHOW");
+frame:RegisterEvent("BAG_UPDATE");
 frame:RegisterEvent("MERCHANT_CLOSED");
 frame:RegisterEvent("PLAYER_LOGIN");
 
@@ -128,25 +152,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
 	end
 
 	if event == "MERCHANT_SHOW" then
-		local _, _, _, quality, _, _, itemLink, _, _, itemID;
-		for i = 0, (NUM_BAG_FRAMES + 1) do -- The constant is equal to 4.
-			for j = 1, GetContainerNumSlots(i) do
-				_, itemCount, _, quality, _, _, itemLink, _, _, itemID = GetContainerItemInfo(i, j);
-				
-				if quality then -- This accounts for empty slots.
-					if quality < 1 then -- This is a poor quality item.
-						CalculateProfit(itemID);
-						UseContainerItem(i, j);
-					else
-						if Contains(itemID) then
-							local itemString = select(3, strfind(itemLink, "|H(.+)|h")); itemString = string.match(itemString, "(.*)%[");
-							CalculateProfit(itemString, itemCount);
-							UseContainerItem(i, j);
-						end
-					end
-				end
-			end
-		end
+		ScanInventory();
 	end
 	
 	if event == "MERCHANT_CLOSED" then
@@ -154,5 +160,8 @@ frame:SetScript("OnEvent", function(self, event, ...)
 			print("|cff00ccff" .. curator .. "|r: " .. "Sold all items for the following profit: " .. GetCoinTextureString(sellProfit, 12));
 			sellProfit = 0;
 		end
+		
+		matchedItems = 0;
+		itemsSold = 0;
 	end
 end);
