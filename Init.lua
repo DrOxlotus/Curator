@@ -75,10 +75,19 @@ local function Add(arg)
 	for i in string.gmatch(arg, "%S+") do
 		if tonumber(i) ~= nil then -- This argument is an item ID.
 			for j = 1, #CuratorSellListPerCharacter do
-				if CuratorSellListPerCharacter[j] == i then
-					print("|cff00ccff" .. curator .. "|r: " .. "This character already added " .. i .. "!");
-					doNotAdd = true;
-					break;
+				if tonumber(CuratorSellListPerCharacter[j]) ~= nil then -- The current index is an item ID.
+					if tonumber(CuratorSellListPerCharacter[j]) == tonumber(i) then -- This is a comparison between two item IDs.
+						print("|cff00ccff" .. curator .. "|r: " .. "This character already added " .. i .. "!");
+						doNotAdd = true;
+						break;
+					end
+				else -- The current index is an item link.
+					local itemID = GetItemInfoInstant(CuratorSellListPerCharacter[j]);
+					if itemID == tonumber(i) then -- The system found a match, an item ID vs an item link.
+						print("|cff00ccff" .. curator .. "|r: " .. "This character already added " .. CuratorSellListPerCharacter[j] .. "!");
+						doNotAdd = true;
+						break;
+					end
 				end
 			end
 			if not doNotAdd then
@@ -96,9 +105,10 @@ local function Add(arg)
 		local itemLink = select(2, GetItemInfo(itemLinks[k]));
 		if itemLink then
 			local itemID = GetItemInfoInstant(itemLink);
-			for i = 1, #CuratorSellListPerCharacter do -- Silent check
+			for i = 1, #CuratorSellListPerCharacter do -- Silently check if the item ID associated with this item link is already in the table.
 				if select(1, GetItemInfoInstant(CuratorSellListPerCharacter[i])) == itemID then
-					return;
+					doNotAdd = true;
+					break;
 				end
 			end
 			for i = 1, #CuratorSellListPerCharacter do
@@ -124,8 +134,8 @@ local function Remove(arg)
 			for j = 1, #CuratorSellListPerCharacter do
 				if tonumber(CuratorSellListPerCharacter[j]) ~= nil then -- The current index is an item ID.
 					if CuratorSellListPerCharacter[j] == i then -- The system found a match, an item ID vs an item ID.
-						table.remove(CuratorSellListPerCharacter, j);
 						print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. CuratorSellListPerCharacter[j] .. ".");
+						table.remove(CuratorSellListPerCharacter, j);
 						break;
 					end
 				else -- The current index matches an item link.
