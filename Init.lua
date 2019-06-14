@@ -73,7 +73,7 @@ end
 
 local function Add(arg)
 	for i in string.gmatch(arg, "%S+") do
-		if tonumber(i) ~= nil then
+		if tonumber(i) ~= nil then -- This argument is an item ID.
 			for j = 1, #CuratorSellListPerCharacter do
 				if CuratorSellListPerCharacter[j] == i then
 					print("|cff00ccff" .. curator .. "|r: " .. "This character already added " .. i .. "!");
@@ -95,6 +95,12 @@ local function Add(arg)
 	for k, v in ipairs(itemLinks) do
 		local itemLink = select(2, GetItemInfo(itemLinks[k]));
 		if itemLink then
+			local itemID = GetItemInfoInstant(itemLink);
+			for i = 1, #CuratorSellListPerCharacter do -- Silent check
+				if select(1, GetItemInfoInstant(CuratorSellListPerCharacter[i])) == itemID then
+					return;
+				end
+			end
 			for i = 1, #CuratorSellListPerCharacter do
 				if CuratorSellListPerCharacter[i] == itemLink then
 					print("|cff00ccff" .. curator .. "|r: " .. "This character already added " .. itemLink .. "!");
@@ -114,46 +120,51 @@ end
 
 local function Remove(arg)
 	for i in string.gmatch(arg, "%S+") do
-		if tonumber(i) ~= nil then
+		if tonumber(i) ~= nil then -- The player passed an item ID to the command.
 			for j = 1, #CuratorSellListPerCharacter do
-				if CuratorSellListPerCharacter[j] == i then
-					table.remove(CuratorSellListPerCharacter, j);
-					print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. i .. ".");
-					break;
-				end
-			end
-		end
-	end
-	
-	for i = 1, #CuratorSellListPerCharacter do
-		if tonumber(CuratorSellListPerCharacter[i]) == nil then -- The object at this index is an item link.
-			local itemIDInList = GetItemInfoInstant(CuratorSellListPerCharacter[i]);
-			if tonumber(arg) ~= nil then -- The player passed an item ID to the command.
-				if itemIDInList then
-					if itemIDInList == arg then -- The player passed an item ID for an object that is in the table as an item link.
-						table.remove(CuratorSellListPerCharacter, i);
-						print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. arg .. ".");
-						return;
+				if tonumber(CuratorSellListPerCharacter[j]) ~= nil then -- The current index is an item ID.
+					if CuratorSellListPerCharacter[j] == i then -- The system found a match, an item ID vs an item ID.
+						table.remove(CuratorSellListPerCharacter, j);
+						print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. CuratorSellListPerCharacter[j] .. ".");
+						break;
+					end
+				else -- The current index matches an item link.
+					local itemID = GetItemInfoInstant(CuratorSellListPerCharacter[j]);
+					if tonumber(itemID) == tonumber(i) then -- The passed item ID matches the item ID of the current item link.
+						print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. CuratorSellListPerCharacter[j] .. ".");
+						table.remove(CuratorSellListPerCharacter, j);
+						break;
 					end
 				end
-			else -- The player passed an item link to the command.
-				local argItemID = GetItemInfoInstant(arg);
-				if itemIDInList == argItemID then
-					table.remove(CuratorSellListPerCharacter, i);
-					print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. arg .. ".");
-					return;
-				end
 			end
-		else -- The object at this index is an item ID.
-			local argItemID = GetItemInfoInstant(arg);
-			if CuratorSellListPerCharacter[i] == argItemID then
-				table.remove(CuratorSellListPerCharacter, i);
-				print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. arg .. ".");
-				return;
-			end
+		else
+			break;
 		end
 	end
 	
+	local itemLinks = { strsplit("] [", arg) };
+	
+	for k, v in ipairs(itemLinks) do
+		local itemLink = select(2, GetItemInfo(itemLinks[k]));
+		if itemLink then
+			for i = 1, #CuratorSellListPerCharacter do
+				if tonumber(CuratorSellListPerCharacter[i]) ~= nil then -- The object at this index is an item ID.
+					local itemID = GetItemInfoInstant(itemLink);
+					if tonumber(CuratorSellListPerCharacter[i]) == itemID then -- The system found a match, an item ID vs an item link.
+						print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. CuratorSellListPerCharacter[i] .. ".");
+						table.remove(CuratorSellListPerCharacter, i);
+						break;
+					end
+				else -- The object at this index is an item link.
+					if CuratorSellListPerCharacter[i] == itemLink then -- The passed item link matches the item link of the current index.
+						print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. CuratorSellListPerCharacter[i] .. ".");
+						table.remove(CuratorSellListPerCharacter, i);
+						break;
+					end
+				end
+			end
+		end
+	end
 	--print("|cff00ccff" .. curator .. "|r: " .. arg .. " isn't in the list!");
 	return;
 end
