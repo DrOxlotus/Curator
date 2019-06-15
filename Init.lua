@@ -16,7 +16,6 @@ local sellProfit = 0;
 local deletedItemCount = 0;
 local doNotAddItem = false;
 local itemExists = false;
-local outputCount = 0;
 
 -- Module Functions
 local function Contains(itemID)
@@ -77,14 +76,10 @@ local function Report(func, ret, val)
 	if func == "Add" then
 		if ret == "+" then
 			print("|cff00ccff" .. curator .. "|r: " .. "Added " .. val .. ".");
-		else
-			print("|cff00ccff" .. curator .. "|r: " .. "This character already added " .. val .. "!");
 		end
 	else -- Remove
 		if ret == "+" then
 			print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. val .. ".");
-		else
-			print("|cff00ccff" .. curator .. "|r: " .. val .. " isn't in the list!");
 		end
 	end
 end
@@ -92,17 +87,14 @@ end
 local function Add(arg)
 	if tonumber(arg) ~= nil then -- We're dealing with some numbers.
 		for i in string.gmatch(arg, "%S+") do
+			doNotAddItem = false;
 			for j = 1, #CuratorSellListPerCharacter do
 				if CuratorSellListPerCharacter[j] == tonumber(i) then
 					doNotAddItem = true;
 					break;
 				end
 			end
-			if doNotAddItem then
-				doNotAddItem = false;
-				Report("Add", "-", i);
-			else
-				doNotAddItem = false;
+			if not doNotAddItem then
 				CuratorSellListPerCharacter[#CuratorSellListPerCharacter + 1] = tonumber(i);
 				Report("Add", "+", i);
 			end
@@ -111,6 +103,7 @@ local function Add(arg)
 		local itemLinks = { strsplit("][", arg) };
 
 		for k, v in ipairs(itemLinks) do
+			doNotAddItem = false;
 			local _, itemLink = GetItemInfo(itemLinks[k]);
 			if itemLink then
 				local itemID = GetItemInfoInstant(itemLink);
@@ -120,27 +113,20 @@ local function Add(arg)
 						break;
 					end
 				end
-				if doNotAddItem then
-					doNotAddItem = false;
-					if outputCount < 1 then
-						outputCount = outputCount + 1;
-						Report("Add", "-", itemLink);
-					end
-				else
-					outputCount = outputCount + 1;
-					doNotAddItem = false;
+				if not doNotAddItem then
+					--outputCount = outputCount + 1;
 					CuratorSellListPerCharacter[#CuratorSellListPerCharacter + 1] = itemID;
 					Report("Add", "+", itemLink);
 				end
 			end
 		end
-		outputCount = 0;
 	end
 end
 
 local function Remove(arg)
 	if tonumber(arg) ~= nil then -- We're dealing with numbers.
 		for i in string.gmatch(arg, "%S+") do
+			itemExists = false;
 			for j = 1, #CuratorSellListPerCharacter do
 				if CuratorSellListPerCharacter[j] == tonumber(i) then
 					table.remove(CuratorSellListPerCharacter, j);
@@ -149,17 +135,14 @@ local function Remove(arg)
 				end
 			end
 			if itemExists then
-				itemExists = false;
 				Report("Remove", "+", i);
-			else
-				itemExists = false;
-				Report("Remove", "-", i);
 			end
 		end
 	else -- We're dealing with item links.
 		local itemLinks = { strsplit("][", arg) };
 	
 		for k, v in ipairs(itemLinks) do
+			itemExists = false;
 			local _, itemLink = GetItemInfo(itemLinks[k]);
 			if itemLink then
 				local itemID = GetItemInfoInstant(itemLink);
@@ -171,21 +154,10 @@ local function Remove(arg)
 					end
 				end
 				if itemExists then
-					itemExists = false;
-					if outputCount < 1 then
-						outputCount = outputCount + 1;
-						Report("Remove", "+", itemLink);
-					end
-				else
-					if outputCount < 1 then
-						outputCount = outputCount + 1;
-						itemExists = false;
-						Report("Remove", "-", itemLink);
-					end
+					Report("Remove", "+", itemLink);
 				end
 			end
 		end
-		outputCount = 0;
 	end
 end
 
@@ -202,7 +174,7 @@ SlashCmdList["curator"] = function(cmd, editbox)
 		print("|cff00ccff" .. curator .. "|r: " .. "Please use the add or remove commands.");
 	elseif cmd == "add" and args ~= "" then
 		Add(args);
-	elseif cmd == "remove" and args ~= "" then
+	elseif cmd == "remove" or cmd == "rm" and args ~= "" then
 		Remove(args);
 	else
 		print("|cff00ccff" .. curator .. "|r: " .. "Not a valid command or the command used is missing operands.");
