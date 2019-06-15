@@ -72,19 +72,17 @@ local function ScanInventory()
 end
 
 local function Add(arg)
-	for i in string.gmatch(arg, "%S+") do
-		if tonumber(i) ~= nil then -- This argument is an item ID.
+	if tonumber(arg) ~= nil then -- We're dealing with some numbers.
+		for i in string.gmatch(arg, "%S+") do
 			for j = 1, #CuratorSellListPerCharacter do
 				if tonumber(CuratorSellListPerCharacter[j]) ~= nil then -- The current index is an item ID.
 					if tonumber(CuratorSellListPerCharacter[j]) == tonumber(i) then -- This is a comparison between two item IDs.
-						print("|cff00ccff" .. curator .. "|r: " .. "This character already added " .. i .. "!");
 						doNotAdd = true;
 						break;
 					end
 				else -- The current index is an item link.
 					local itemID = GetItemInfoInstant(CuratorSellListPerCharacter[j]);
 					if itemID == tonumber(i) then -- The system found a match, an item ID vs an item link.
-						print("|cff00ccff" .. curator .. "|r: " .. "This character already added " .. CuratorSellListPerCharacter[j] .. "!");
 						doNotAdd = true;
 						break;
 					end
@@ -94,35 +92,40 @@ local function Add(arg)
 				CuratorSellListPerCharacter[#CuratorSellListPerCharacter + 1] = i;
 				print("|cff00ccff" .. curator .. "|r: " .. "Added " .. i .. ".");
 			else
+				print("|cff00ccff" .. curator .. "|r: " .. "This character already added " .. CuratorSellListPerCharacter[j] .. "!");
 				doNotAdd = false;
 			end
 		end
-	end
-	
-	local itemLinks = { strsplit("] [", arg) };
-	
-	for k, v in ipairs(itemLinks) do
-		local itemLink = select(2, GetItemInfo(itemLinks[k]));
-		if itemLink then
-			local itemID = GetItemInfoInstant(itemLink);
-			for i = 1, #CuratorSellListPerCharacter do -- Silently check if the item ID associated with this item link is already in the table.
-				if select(1, GetItemInfoInstant(CuratorSellListPerCharacter[i])) == itemID then
-					doNotAdd = true;
-					break;
+	else -- We're dealing with some item links.
+		local itemLinks = { strsplit("] [", arg) };
+		local index;
+
+		for k, v in ipairs(itemLinks) do
+			local _, itemLink = GetItemInfo(itemLinks[k]);
+			if itemLink then
+				local itemID = GetItemInfoInstant(itemLink);
+				for j = 1, #CuratorSellListPerCharacter do -- Silently check if the item ID associated with this item link is already in the table.
+					if tonumber(CuratorSellListPerCharacter[j]) ~= nil then -- This is an item ID.
+						index = tonumber(CuratorSellListPerCharacter[j]);
+						if index == itemID then
+							doNotAdd = true;
+							break;
+						end
+					else -- This is an item link.
+						index = CuratorSellListPerCharacter[j];
+						if index == itemLink then
+							doNotAdd = true;
+							break;
+						end
+					end
 				end
-			end
-			for i = 1, #CuratorSellListPerCharacter do
-				if CuratorSellListPerCharacter[i] == itemLink then
+				if not doNotAdd then -- This is when 'doNotAdd' is false and we should add the item to the table.
+					CuratorSellListPerCharacter[#CuratorSellListPerCharacter + 1] = itemLink;
+					print("|cff00ccff" .. curator .. "|r: " .. "Added " .. itemLink .. ".");
+				else
 					print("|cff00ccff" .. curator .. "|r: " .. "This character already added " .. itemLink .. "!");
-					doNotAdd = true;
-					break;
+					doNotAdd = false;
 				end
-			end
-			if not doNotAdd then
-				CuratorSellListPerCharacter[#CuratorSellListPerCharacter + 1] = itemLink;
-				print("|cff00ccff" .. curator .. "|r: " .. "Added " .. itemLink .. ".");
-			else
-				doNotAdd = false;
 			end
 		end
 	end
@@ -155,7 +158,7 @@ local function Remove(arg)
 	local itemLinks = { strsplit("] [", arg) };
 	
 	for k, v in ipairs(itemLinks) do
-		local itemLink = select(2, GetItemInfo(itemLinks[k]));
+		local _, itemLink = GetItemInfo(itemLinks[k]);
 		if itemLink then
 			for i = 1, #CuratorSellListPerCharacter do
 				if tonumber(CuratorSellListPerCharacter[i]) ~= nil then -- The object at this index is an item ID.
