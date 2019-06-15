@@ -26,9 +26,16 @@ local function Contains(itemID)
 	end
 end
 
-local function CalculateProfit(itemID, itemCount)
-	sellPrice = itemCount * select(11, GetItemInfo(itemID));
-	sellProfit = sellProfit + sellPrice;
+local function CalculateProfit(item, itemCount)
+	sellPrice = itemCount * select(11, GetItemInfo(item));
+	
+	if sellPrice == 0 then
+		return true;
+	else
+		sellPrice = sellPrice / 2;
+		sellProfit = sellProfit + sellPrice;
+		return false;
+	end
 end
 
 local function ScanInventory()
@@ -44,13 +51,12 @@ local function ScanInventory()
 					UseContainerItem(i, j);
 				else
 					if Contains(itemID) then -- This is an item that the player added to the database.
-						CalculateProfit(itemID, itemCount);
-						if sellPrice == 0 then
+						if CalculateProfit(itemID, itemCount) == 0 then
 							PickupContainerItem(i, j);
 							DeleteCursorItem();
 							deletedItemCount = deletedItemCount + 1;
 						else
-							local itemString = select(3, strfind(itemLink, "|H(.+)|h")); itemString = string.match(itemString, "(.*)%[");
+							local itemString = string.match(select(3, strfind(itemLink, "|H(.+)|h")), "(.*)%[");
 							CalculateProfit(itemString, itemCount);
 							UseContainerItem(i, j);
 						end
