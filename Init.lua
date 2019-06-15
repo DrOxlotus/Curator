@@ -20,19 +20,8 @@ local itemExists = false;
 -- Module Functions
 local function Contains(itemID)
 	for i = 1, #CuratorSellListPerCharacter do
-		if tonumber(CuratorSellListPerCharacter[i]) == nil then -- The object at this index is an item link.
-			local itemIDInList = GetItemInfoInstant(CuratorSellListPerCharacter[i]);
-			if itemIDInList == itemID then
-				return true;
-			else
-				i = i + 1;
-			end
-		else -- The object at this index is an itemID.
-			if CuratorSellListPerCharacter[i] == itemID then
-				return true;
-			else
-				i = i + 1;
-			end
+		if CuratorSellListPerCharacter[i] == itemID then
+			return true;
 		end
 	end
 end
