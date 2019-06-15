@@ -14,7 +14,9 @@ local isAddonLoaded = IsAddOnLoaded("Curator");
 local sellPrice = 0;
 local sellProfit = 0;
 local deletedItemCount = 0;
-local doNotAdd = false;
+local doNotAddItem = false;
+local itemExists = false;
+local outputCount = 0;
 
 -- Module Functions
 local function Contains(itemID)
@@ -71,115 +73,120 @@ local function ScanInventory()
 	end
 end
 
+local function Report(func, ret, val)
+	if func == "Add" then
+		if ret == "+" then
+			print("|cff00ccff" .. curator .. "|r: " .. "Added " .. val .. ".");
+		else
+			print("|cff00ccff" .. curator .. "|r: " .. "This character already added " .. val .. "!");
+		end
+	else -- Remove
+		if ret == "+" then
+			print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. val .. ".");
+		else
+			print("|cff00ccff" .. curator .. "|r: " .. val .. " isn't in the list!");
+		end
+	end
+end
+
 local function Add(arg)
 	if tonumber(arg) ~= nil then -- We're dealing with some numbers.
 		for i in string.gmatch(arg, "%S+") do
 			for j = 1, #CuratorSellListPerCharacter do
-				if tonumber(CuratorSellListPerCharacter[j]) ~= nil then -- The current index is an item ID.
-					if tonumber(CuratorSellListPerCharacter[j]) == tonumber(i) then -- This is a comparison between two item IDs.
-						doNotAdd = true;
-						break;
-					end
-				else -- The current index is an item link.
-					local itemID = GetItemInfoInstant(CuratorSellListPerCharacter[j]);
-					if itemID == tonumber(i) then -- The system found a match, an item ID vs an item link.
-						doNotAdd = true;
-						break;
-					end
+				if CuratorSellListPerCharacter[j] == tonumber(i) then
+					doNotAddItem = true;
+					break;
 				end
 			end
-			if not doNotAdd then
-				CuratorSellListPerCharacter[#CuratorSellListPerCharacter + 1] = i;
-				print("|cff00ccff" .. curator .. "|r: " .. "Added " .. i .. ".");
+			if doNotAddItem then
+				doNotAddItem = false;
+				Report("Add", "-", i);
 			else
-				print("|cff00ccff" .. curator .. "|r: " .. "This character already added " .. CuratorSellListPerCharacter[j] .. "!");
-				doNotAdd = false;
+				doNotAddItem = false;
+				CuratorSellListPerCharacter[#CuratorSellListPerCharacter + 1] = tonumber(i);
+				Report("Add", "+", i);
 			end
 		end
 	else -- We're dealing with some item links.
-		local itemLinks = { strsplit("] [", arg) };
-		local index;
+		local itemLinks = { strsplit("][", arg) };
 
 		for k, v in ipairs(itemLinks) do
 			local _, itemLink = GetItemInfo(itemLinks[k]);
 			if itemLink then
 				local itemID = GetItemInfoInstant(itemLink);
-				for j = 1, #CuratorSellListPerCharacter do -- Silently check if the item ID associated with this item link is already in the table.
-					if tonumber(CuratorSellListPerCharacter[j]) ~= nil then -- This is an item ID.
-						index = tonumber(CuratorSellListPerCharacter[j]);
-						if index == itemID then
-							doNotAdd = true;
-							break;
-						end
-					else -- This is an item link.
-						index = CuratorSellListPerCharacter[j];
-						if index == itemLink then
-							doNotAdd = true;
-							break;
-						end
+				for j = 1, #CuratorSellListPerCharacter do
+					if CuratorSellListPerCharacter[j] == itemID then
+						doNotAddItem = true;
+						break;
 					end
 				end
-				if not doNotAdd then -- This is when 'doNotAdd' is false and we should add the item to the table.
-					CuratorSellListPerCharacter[#CuratorSellListPerCharacter + 1] = itemLink;
-					print("|cff00ccff" .. curator .. "|r: " .. "Added " .. itemLink .. ".");
+				if doNotAddItem then
+					doNotAddItem = false;
+					if outputCount < 1 then
+						outputCount = outputCount + 1;
+						Report("Add", "-", itemLink);
+					end
 				else
-					print("|cff00ccff" .. curator .. "|r: " .. "This character already added " .. itemLink .. "!");
-					doNotAdd = false;
+					outputCount = outputCount + 1;
+					doNotAddItem = false;
+					CuratorSellListPerCharacter[#CuratorSellListPerCharacter + 1] = itemID;
+					Report("Add", "+", itemLink);
 				end
 			end
 		end
+		outputCount = 0;
 	end
 end
 
 local function Remove(arg)
-	for i in string.gmatch(arg, "%S+") do
-		if tonumber(i) ~= nil then -- The player passed an item ID to the command.
+	if tonumber(arg) ~= nil then -- We're dealing with numbers.
+		for i in string.gmatch(arg, "%S+") do
 			for j = 1, #CuratorSellListPerCharacter do
-				if tonumber(CuratorSellListPerCharacter[j]) ~= nil then -- The current index is an item ID.
-					if CuratorSellListPerCharacter[j] == i then -- The system found a match, an item ID vs an item ID.
-						print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. CuratorSellListPerCharacter[j] .. ".");
-						table.remove(CuratorSellListPerCharacter, j);
-						break;
-					end
-				else -- The current index matches an item link.
-					local itemID = GetItemInfoInstant(CuratorSellListPerCharacter[j]);
-					if tonumber(itemID) == tonumber(i) then -- The passed item ID matches the item ID of the current item link.
-						print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. CuratorSellListPerCharacter[j] .. ".");
-						table.remove(CuratorSellListPerCharacter, j);
+				if CuratorSellListPerCharacter[j] == tonumber(i) then
+					table.remove(CuratorSellListPerCharacter, j);
+					itemExists = true;
+					break;
+				end
+			end
+			if itemExists then
+				itemExists = false;
+				Report("Remove", "+", i);
+			else
+				itemExists = false;
+				Report("Remove", "-", i);
+			end
+		end
+	else -- We're dealing with item links.
+		local itemLinks = { strsplit("][", arg) };
+	
+		for k, v in ipairs(itemLinks) do
+			local _, itemLink = GetItemInfo(itemLinks[k]);
+			if itemLink then
+				local itemID = GetItemInfoInstant(itemLink);
+				for i = 1, #CuratorSellListPerCharacter do
+					if CuratorSellListPerCharacter[i] == itemID then
+						table.remove(CuratorSellListPerCharacter, i);
+						itemExists = true;
 						break;
 					end
 				end
-			end
-		else
-			break;
-		end
-	end
-	
-	local itemLinks = { strsplit("] [", arg) };
-	
-	for k, v in ipairs(itemLinks) do
-		local _, itemLink = GetItemInfo(itemLinks[k]);
-		if itemLink then
-			for i = 1, #CuratorSellListPerCharacter do
-				if tonumber(CuratorSellListPerCharacter[i]) ~= nil then -- The object at this index is an item ID.
-					local itemID = GetItemInfoInstant(itemLink);
-					if tonumber(CuratorSellListPerCharacter[i]) == itemID then -- The system found a match, an item ID vs an item link.
-						print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. CuratorSellListPerCharacter[i] .. ".");
-						table.remove(CuratorSellListPerCharacter, i);
-						break;
+				if itemExists then
+					itemExists = false;
+					if outputCount < 1 then
+						outputCount = outputCount + 1;
+						Report("Remove", "+", itemLink);
 					end
-				else -- The object at this index is an item link.
-					if CuratorSellListPerCharacter[i] == itemLink then -- The passed item link matches the item link of the current index.
-						print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. CuratorSellListPerCharacter[i] .. ".");
-						table.remove(CuratorSellListPerCharacter, i);
-						break;
+				else
+					if outputCount < 1 then
+						outputCount = outputCount + 1;
+						itemExists = false;
+						Report("Remove", "-", itemLink);
 					end
 				end
 			end
 		end
+		outputCount = 0;
 	end
-	--print("|cff00ccff" .. curator .. "|r: " .. arg .. " isn't in the list!");
-	return;
 end
 
 -- Event Registrations
@@ -226,3 +233,15 @@ frame:SetScript("OnEvent", function(self, event, ...)
 		end
 	end
 end);
+
+--[[function ConvertAllRecords()
+	for i = 1, #CuratorSellListPerCharacter do
+		if tonumber(CuratorSellListPerCharacter[i]) == nil then -- It's not a number.
+			local itemID = GetItemInfoInstant(CuratorSellListPerCharacter[i]);
+			CuratorSellListPerCharacter[i] = itemID;
+		elseif type(CuratorSellListPerCharacter[i]) ~= "number" then -- It's not a number.
+			local itemID = GetItemInfoInstant(CuratorSellListPerCharacter[i]);
+			CuratorSellListPerCharacter[i] = itemID;
+		end
+	end
+end]]--
