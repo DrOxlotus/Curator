@@ -11,40 +11,37 @@ local curator, curatorNS = ...;
 -- Module Variables
 local frame = CreateFrame("Frame");
 local isAddonLoaded = IsAddOnLoaded("Curator");
-local sellPrice = 0;
-local sellProfit = 0;
+local profit = 0;
 local deletedItemCount = 0;
 local doNotAddItem = false;
 local itemExists = false;
+local itemHasNoSellPrice = false;
 
 -- Module Functions
 local function Contains(itemID)
 	for i = 1, #CuratorSellListPerCharacter do
 		if CuratorSellListPerCharacter[i] == itemID then
+			if select(11, GetItemInfo(itemID)) == 0 then
+				itemHasNoSellPrice = true;
+			else
+				itemHasNoSellPrice = false;
+			end
+			
 			return true;
 		end
 	end
 end
 
 local function CalculateProfit(item, itemCount)
-	sellPrice = 0;
-	sellPrice = itemCount * select(11, GetItemInfo(item));
-	
-	if sellPrice == 0 then
-		return true;
-	else
-		sellPrice = sellPrice / 2;
-		sellProfit = sellProfit + sellPrice;
-		return false;
-	end
+	profit = (profit) + (itemCount * select(11, GetItemInfo(item)));
+	print(profit);
 end
 
 local function ScanInventory()
-	local _, _, _, quality, _, _, itemLink, _, _, itemID;
 	
 	for i = 0, (NUM_BAG_FRAMES + 1) do -- The constant is equal to 4.
 		for j = 1, GetContainerNumSlots(i) do
-			_, itemCount, _, quality, _, _, itemLink, _, _, itemID = GetContainerItemInfo(i, j);
+			local _, itemCount, _, quality, _, _, itemLink, _, _, itemID = GetContainerItemInfo(i, j);
 			
 			if itemID then -- This accounts for empty slots and items without an ID.
 				if quality < 1 then -- This is a poor quality item.
@@ -52,14 +49,13 @@ local function ScanInventory()
 					UseContainerItem(i, j);
 				else
 					if Contains(itemID) then -- This is an item that the player added to the database.
-						if CalculateProfit(itemID, itemCount) then
+						if itemHasNoSellPrice then
 							PickupContainerItem(i, j);
 							DeleteCursorItem();
 							deletedItemCount = deletedItemCount + 1;
 						else
 							local itemString = string.match(select(3, strfind(itemLink, "|H(.+)|h")), "(.*)%[");
 							CalculateProfit(itemString, itemCount);
-							print(itemLink .. " - " .. sellProfit);
 							UseContainerItem(i, j);
 						end
 					end
@@ -191,15 +187,16 @@ frame:SetScript("OnEvent", function(self, event, ...)
 	end
 	
 	if event == "MERCHANT_CLOSED" then
-		if sellProfit ~= 0 then
-			print("|cff00ccff" .. curator .. "|r: " .. "Sold all items for the following profit: " .. GetCoinTextureString(sellProfit, 12));
-			sellProfit = 0;
+		if profit ~= 0 then
+			print("|cff00ccff" .. curator .. "|r: " .. "Sold all items for the following profit: " .. GetCoinTextureString(profit, 12));
 		end
 		
 		if deletedItemCount > 0 then
 			print("|cff00ccff" .. curator .. "|r: " .. "Deleted " .. deletedItemCount .. " item(s) with no sell price.");
 			deletedItemCount = 0;
 		end
+		
+		profit = 0;
 	end
 end);
 
