@@ -10,12 +10,14 @@ local curator, curatorNS = ...;
 
 -- Module Variables
 local frame = CreateFrame("Frame");
+local mouseFrame = CreateFrame("Frame", "MouseFrame", UIParent);
 local isAddonLoaded = IsAddOnLoaded("Curator");
 local profit = 0;
 local deletedItemCount = 0;
 local doNotAddItem = false;
 local itemExists = false;
 local itemHasNoSellPrice = false;
+local tooltipLink;
 
 -- Module Functions
 local function Contains(itemID)
@@ -153,7 +155,29 @@ local function Remove(arg)
 	end
 end
 
+local function GetItemLinkFromTooltip(tooltip)
+	local _, itemLink = tooltip:GetItem();
+	if not itemLink then
+		return
+	else
+		tooltipLink = itemLink;
+	end
+end
+
+local function AddItemByKeybind(self, key)
+	if (key == "F5") then
+		GameTooltip:HookScript("OnTooltipSetItem", GetItemLinkFromTooltip);
+		
+		if not tooltipLink then
+			return
+		else
+			print(tooltipLink);
+		end
+	end
+end
+
 -- Event Registrations
+mouseFrame:RegisterEvent("MODIFIER_STATE_CHANGED");
 frame:RegisterEvent("MERCHANT_SHOW");
 frame:RegisterEvent("MERCHANT_CLOSED");
 frame:RegisterEvent("PLAYER_LOGIN");
@@ -198,6 +222,9 @@ frame:SetScript("OnEvent", function(self, event, ...)
 		profit = 0;
 	end
 end);
+
+mouseFrame:SetScript("OnKeyDown", AddItemByKeybind);
+mouseFrame:SetPropagateKeyboardInput(true);
 
 --[[function ConvertAllRecords()
 	for i = 1, #CuratorSellListPerCharacter do
