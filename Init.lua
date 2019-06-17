@@ -164,14 +164,20 @@ local function GetItemLinkFromTooltip(tooltip)
 	end
 end
 
-local function AddItemByKeybind(self, key)
-	if (key == "F5") then
+local function HandleKeyPress(self, key)
+	if (key == "F5") then -- Add the item
 		GameTooltip:HookScript("OnTooltipSetItem", GetItemLinkFromTooltip);
 		
-		if not tooltipLink then
-			return
-		else
-			print(tooltipLink);
+		if tooltipLink then -- On the first key press after logon or reload the tooltip returns a 'nil' value.
+			Add(tooltipLink);
+		end
+	end
+	
+	if (key == "F6") then -- Remove the item
+		GameTooltip:HookScript("OnTooltipSetItem", GetItemLinkFromTooltip);
+		
+		if tooltipLink then -- On the first key press after logon or reload the tooltip returns a 'nil' value.
+			Remove(tooltipLink);
 		end
 	end
 end
@@ -223,7 +229,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
 	end
 end);
 
-mouseFrame:SetScript("OnKeyDown", AddItemByKeybind);
+mouseFrame:SetScript("OnKeyDown", HandleKeyPress);
 mouseFrame:SetPropagateKeyboardInput(true);
 
 --[[function ConvertAllRecords()
