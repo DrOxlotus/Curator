@@ -34,7 +34,6 @@ end
 
 local function CalculateProfit(item, itemCount)
 	profit = (profit) + (itemCount * select(11, GetItemInfo(item)));
-	print(profit);
 end
 
 local function ScanInventory()
