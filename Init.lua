@@ -325,8 +325,14 @@ frame:SetScript("OnEvent", function(self, event, ...)
 	
 	if event == "MERCHANT_CLOSED" then
 		if profit ~= 0 then
-			print("|cff00ccff" .. curator .. "|r: " .. "Sold all items for the following profit: " .. GetCoinTextureString((profit - repairCost), 12) .. 
-			" (-" .. GetCoinTextureString(repairCost, 8) .. ")");
+			if repairCost ~= 0 then
+				print("|cff00ccff" .. curator .. "|r: " .. "Sold all items for the following profit: " .. GetCoinTextureString((profit - repairCost), 12) .. 
+				" (-" .. GetCoinTextureString(repairCost, 8) .. ")");
+			else
+				print("|cff00ccff" .. curator .. "|r: " .. "Sold all items for the following profit: " .. GetCoinTextureString(profit, 12));
+			end
+		elseif repairCost ~= 0 then
+			print("|cff00ccff" .. curator .. "|r: " .. "Repaired all items at the following cost: " .. GetCoinTextureString(repairCost, 12));
 		end
 		
 		if deletedItemCount > 0 then
