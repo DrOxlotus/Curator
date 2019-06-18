@@ -18,6 +18,7 @@ local doNotAddItem = false;
 local itemExists = false;
 local itemHasNoSellPrice = false;
 local tooltipLink;
+local repairCost;
 
 -- Module Functions
 local function Contains(itemID)
@@ -117,6 +118,45 @@ local function Add(arg)
 	end
 end
 
+local function AddToAll(arg)
+	if tonumber(arg) ~= nil then -- We're dealing with some numbers.
+		for i in string.gmatch(arg, "%S+") do
+			doNotAddItem = false;
+			for j = 1, #CuratorSellList do
+				if CuratorSellList[j] == tonumber(i) then
+					doNotAddItem = true;
+					break;
+				end
+			end
+			if not doNotAddItem then
+				CuratorSellList[#CuratorSellList + 1] = tonumber(i);
+				Report("Add", "+", i);
+			end
+		end
+	else -- We're dealing with some item links.
+		local itemLinks = { strsplit("][", arg) };
+
+		for k, v in ipairs(itemLinks) do
+			doNotAddItem = false;
+			local _, itemLink = GetItemInfo(itemLinks[k]);
+			if itemLink then
+				local itemID = GetItemInfoInstant(itemLink);
+				for j = 1, #CuratorSellList do
+					if CuratorSellList[j] == itemID then
+						doNotAddItem = true;
+						break;
+					end
+				end
+				if not doNotAddItem then
+					--outputCount = outputCount + 1;
+					CuratorSellList[#CuratorSellList + 1] = itemID;
+					Report("Add", "+", itemLink);
+				end
+			end
+		end
+	end
+end
+
 local function Remove(arg)
 	if tonumber(arg) ~= nil then -- We're dealing with numbers.
 		for i in string.gmatch(arg, "%S+") do
@@ -155,6 +195,44 @@ local function Remove(arg)
 	end
 end
 
+local function RemoveFromAll(arg)
+	if tonumber(arg) ~= nil then -- We're dealing with numbers.
+		for i in string.gmatch(arg, "%S+") do
+			itemExists = false;
+			for j = 1, #CuratorSellList do
+				if CuratorSellList[j] == tonumber(i) then
+					table.remove(CuratorSellList, j);
+					itemExists = true;
+					break;
+				end
+			end
+			if itemExists then
+				Report("Remove", "+", i);
+			end
+		end
+	else -- We're dealing with item links.
+		local itemLinks = { strsplit("][", arg) };
+	
+		for k, v in ipairs(itemLinks) do
+			itemExists = false;
+			local _, itemLink = GetItemInfo(itemLinks[k]);
+			if itemLink then
+				local itemID = GetItemInfoInstant(itemLink);
+				for i = 1, #CuratorSellList do
+					if CuratorSellListPerCharacter[i] == itemID then
+						table.remove(CuratorSellList, i);
+						itemExists = true;
+						break;
+					end
+				end
+				if itemExists then
+					Report("Remove", "+", itemLink);
+				end
+			end
+		end
+	end
+end
+
 local function GetItemLinkFromTooltip(tooltip)
 	local _, itemLink = tooltip:GetItem();
 	if not itemLink then
@@ -165,7 +243,7 @@ local function GetItemLinkFromTooltip(tooltip)
 end
 
 local function HandleKeyPress(self, key)
-	if (key == "F5") then -- Add the item
+	if (key == "F5") then -- Add the item to the character list.
 		GameTooltip:HookScript("OnTooltipSetItem", GetItemLinkFromTooltip);
 		
 		if tooltipLink then -- On the first key press after logon or reload the tooltip returns a 'nil' value.
@@ -173,11 +251,27 @@ local function HandleKeyPress(self, key)
 		end
 	end
 	
-	if (key == "F6") then -- Remove the item
+	if (key == "F6") then -- Remove the item from the character list.
 		GameTooltip:HookScript("OnTooltipSetItem", GetItemLinkFromTooltip);
 		
 		if tooltipLink then -- On the first key press after logon or reload the tooltip returns a 'nil' value.
 			Remove(tooltipLink);
+		end
+	end
+	
+	if (key == "F7") then -- Add the item to the account list.
+		GameTooltip:HookScript("OnTooltipSetItem", GetItemLinkFromTooltip);
+		
+		if tooltipLink then -- On the first key press after logon or reload the tooltip returns a 'nil' value.
+			AddToAll(tooltipLink);
+		end
+	end
+	
+	if (key == "F8") then -- Remove the item from the account list.
+		GameTooltip:HookScript("OnTooltipSetItem", GetItemLinkFromTooltip);
+		
+		if tooltipLink then -- On the first key press after logon or reload the tooltip returns a 'nil' value.
+			RemoveFromAll(tooltipLink);
 		end
 	end
 end
@@ -209,15 +303,34 @@ frame:SetScript("OnEvent", function(self, event, ...)
 		if CuratorSellListPerCharacter == nil then
 			CuratorSellListPerCharacter = {};
 		end
+		
+		if CuratorSellList == nil then
+			CuratorSellList = {};
+		end
 	end
 
 	if event == "MERCHANT_SHOW" then
+		local canRepair = CanMerchantRepair();
+		repairCost = GetRepairAllCost();
+		if canRepair then -- The current merchant has the repair option.
+			if repairCost > 0 then -- The player has items that need repaired.
+				local playerMoney = GetMoney();
+				if playerMoney > repairCost then -- The player has enough money to fund the repair.
+					RepairAllItems();
+				end
+			end
+		end
 		ScanInventory();
 	end
 	
 	if event == "MERCHANT_CLOSED" then
 		if profit ~= 0 then
-			print("|cff00ccff" .. curator .. "|r: " .. "Sold all items for the following profit: " .. GetCoinTextureString(profit, 12));
+			if repairCost ~= 0 then
+				print("|cff00ccff" .. curator .. "|r: " .. "Sold all items for the following profit: " .. GetCoinTextureString(profit, 12) .. 
+				"(-" .. GetCoinTextureString(repairCost, 12) .. ")");
+			else
+				print("|cff00ccff" .. curator .. "|r: " .. "Sold all items for the following profit: " .. GetCoinTextureString(profit, 12));
+			end
 		end
 		
 		if deletedItemCount > 0 then
@@ -226,6 +339,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
 		end
 		
 		profit = 0;
+		repairCost = 0;
 	end
 end);
 
