@@ -36,7 +36,10 @@ local function Contains(itemID)
 end
 
 local function CalculateProfit(item, itemCount)
-	profit = (profit) + (itemCount * select(11, GetItemInfo(item)));
+	local itemProfit = (itemCount * select(11, GetItemInfo(item)));
+	profit = (profit + itemProfit);
+	
+	return itemProfit;
 end
 
 local function ScanInventory()
@@ -47,8 +50,13 @@ local function ScanInventory()
 			
 			if itemID then -- This accounts for empty slots and items without an ID.
 				if quality < 1 then -- This is a poor quality item.
-					CalculateProfit(itemID, itemCount);
-					UseContainerItem(i, j);
+					if CalculateProfit(itemID, itemCount) > 0 then
+						UseContainerItem(i, j);
+					else
+						PickupContainerItem(i, j);
+						DeleteCursorItem();
+						deletedItemCount = deletedItemCount + 1;
+					end
 				else
 					if Contains(itemID) then -- This is an item that the player added to the database.
 						if itemHasNoSellPrice then
