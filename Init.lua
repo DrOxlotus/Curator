@@ -33,6 +33,18 @@ local function Contains(itemID)
 			return true;
 		end
 	end
+	
+	for i = 1, #CuratorSellList do
+		if CuratorSellList[i] == itemID then
+			if select(11, GetItemInfo(itemID)) == 0 then
+				itemHasNoSellPrice = true;
+			else
+				itemHasNoSellPrice = false;
+			end
+			
+			return true;
+		end
+	end
 end
 
 local function CalculateProfit(item, itemCount)
