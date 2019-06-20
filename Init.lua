@@ -221,13 +221,7 @@ SlashCmdList["curator"] = function(cmd, editbox)
 	local _, _, cmd, args = string.find(cmd, "%s?(%w+)%s?(.*)");
 	
 	if not cmd or cmd == "" then
-		print("|cff00ccff" .. curator .. "|r: " .. "Please use the add or remove commands.");
-	elseif cmd == "add" and args ~= "" then
-		Add(args, CuratorSellListPerCharacter);
-	elseif cmd == "remove" or cmd == "rm" and args ~= "" then
-		Remove(args);
-	else
-		print("|cff00ccff" .. curator .. "|r: " .. "Not a valid command or the command used is missing operands.");
+		print("|cff00ccff" .. curator .. "|r: " .. "No available commands.");
 	end
 end
 
