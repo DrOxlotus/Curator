@@ -92,9 +92,13 @@ local function Report(func, ret, val)
 		if ret == "+" then
 			print("|cff00ccff" .. curator .. "|r: " .. "Added " .. val .. ".");
 		end
-	else -- Remove
+	elseif func == "Remove" then
 		if ret == "+" then
 			print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. val .. ".");
+		end
+	else
+		if ret == "+" then
+			print("|cff00ccff" .. curator .. "|r: " .. val .. " is already in your account list!");
 		end
 	end
 end
@@ -107,12 +111,27 @@ end
 local function Add(arg, tbl)
 	if tonumber(arg) ~= nil then -- We're dealing with some numbers.
 		for i in string.gmatch(arg, "%S+") do
+			i = tonumber(i);
 			for index, id in ipairs(tbl) do
 				if tbl[index] == i then
 					addItem = false;
-					Remove(itemID, tbl, index);
+					Remove(i, tbl, index);
 					Report("Remove", "+", i);
 					break;
+				end
+			end
+			if tbl == CuratorSellListPerCharacter then -- Check if the item is in the account list.
+				for k, v in ipairs(CuratorSellList) do
+					if v == i then
+						Report("", "+", i);
+						return;
+					end
+				end
+			else -- Check if the item exists in the character list.
+				for k, v in ipairs(CuratorSellListPerCharacter) do
+					if v == i then
+						table.remove(CuratorSellListPerCharacter, k);
+					end
 				end
 			end
 			if addItem then
@@ -135,6 +154,20 @@ local function Add(arg, tbl)
 					if tbl[index] == itemID then
 						addItem = false;
 						Remove(itemID, tbl, index);
+					end
+				end
+				if tbl == CuratorSellListPerCharacter then
+					for k, v in ipairs(CuratorSellList) do
+						if v == itemID then
+							Report("", "+", itemID);
+							return;
+						end
+					end
+				else -- Check if the item exists in the character list.
+					for k, v in ipairs(CuratorSellListPerCharacter) do
+						if v == itemID then
+							table.remove(CuratorSellListPerCharacter, k);
+						end
 					end
 				end
 				if addItem then
@@ -190,7 +223,7 @@ SlashCmdList["curator"] = function(cmd, editbox)
 	if not cmd or cmd == "" then
 		print("|cff00ccff" .. curator .. "|r: " .. "Please use the add or remove commands.");
 	elseif cmd == "add" and args ~= "" then
-		Add(args);
+		Add(args, CuratorSellListPerCharacter);
 	elseif cmd == "remove" or cmd == "rm" and args ~= "" then
 		Remove(args);
 	else
@@ -207,6 +240,14 @@ frame:SetScript("OnEvent", function(self, event, ...)
 		
 		if CuratorSellList == nil then
 			CuratorSellList = {};
+		end
+		
+		for i, j in ipairs(CuratorSellList) do
+			for k, v in ipairs(CuratorSellListPerCharacter) do
+				if v == j then
+					table.remove(CuratorSellListPerCharacter, k);
+				end
+			end
 		end
 	end
 
