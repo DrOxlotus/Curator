@@ -14,7 +14,7 @@ local mouseFrame = CreateFrame("Frame", "MouseFrame", UIParent);
 local isAddonLoaded = IsAddOnLoaded("Curator");
 local profit = 0;
 local deletedItemCount = 0;
-local doNotAddItem = false;
+local addItem = true;
 local itemExists = false;
 local itemHasNoSellPrice = false;
 local tooltipLink;
@@ -99,154 +99,51 @@ local function Report(func, ret, val)
 	end
 end
 
-local function Add(arg)
+local function Remove(arg, tbl, index)
+	table.remove(tbl, index);
+	Report("Remove", "+", arg);
+end
+
+local function Add(arg, tbl)
 	if tonumber(arg) ~= nil then -- We're dealing with some numbers.
 		for i in string.gmatch(arg, "%S+") do
-			doNotAddItem = false;
-			for j = 1, #CuratorSellListPerCharacter do
-				if CuratorSellListPerCharacter[j] == tonumber(i) then
-					doNotAddItem = true;
+			for index, id in ipairs(tbl) do
+				if tbl[index] == i then
+					addItem = false;
+					Remove(itemID, tbl, index);
+					Report("Remove", "+", i);
 					break;
 				end
 			end
-			if not doNotAddItem then
-				CuratorSellListPerCharacter[#CuratorSellListPerCharacter + 1] = tonumber(i);
+			if addItem then
+				tbl[#tbl + 1] = tonumber(i);
 				Report("Add", "+", i);
+				return true;
+			else
+				addItem = true;
+				return false;
 			end
 		end
 	else -- We're dealing with some item links.
 		local itemLinks = { strsplit("][", arg) };
 
 		for k, v in ipairs(itemLinks) do
-			doNotAddItem = false;
 			local _, itemLink = GetItemInfo(itemLinks[k]);
 			if itemLink then
 				local itemID = GetItemInfoInstant(itemLink);
-				for j = 1, #CuratorSellListPerCharacter do
-					if CuratorSellListPerCharacter[j] == itemID then
-						doNotAddItem = true;
-						break;
+				for index, id in ipairs(tbl) do
+					if tbl[index] == itemID then
+						addItem = false;
+						Remove(itemID, tbl, index);
 					end
 				end
-				if not doNotAddItem then
-					--outputCount = outputCount + 1;
-					CuratorSellListPerCharacter[#CuratorSellListPerCharacter + 1] = itemID;
+				if addItem then
+					tbl[#tbl + 1] = tonumber(itemID);
 					Report("Add", "+", itemLink);
-				end
-			end
-		end
-	end
-end
-
-local function AddToAll(arg)
-	if tonumber(arg) ~= nil then -- We're dealing with some numbers.
-		for i in string.gmatch(arg, "%S+") do
-			doNotAddItem = false;
-			for j = 1, #CuratorSellList do
-				if CuratorSellList[j] == tonumber(i) then
-					doNotAddItem = true;
-					break;
-				end
-			end
-			if not doNotAddItem then
-				CuratorSellList[#CuratorSellList + 1] = tonumber(i);
-				Report("Add", "+", i);
-			end
-		end
-	else -- We're dealing with some item links.
-		local itemLinks = { strsplit("][", arg) };
-
-		for k, v in ipairs(itemLinks) do
-			doNotAddItem = false;
-			local _, itemLink = GetItemInfo(itemLinks[k]);
-			if itemLink then
-				local itemID = GetItemInfoInstant(itemLink);
-				for j = 1, #CuratorSellList do
-					if CuratorSellList[j] == itemID then
-						doNotAddItem = true;
-						break;
-					end
-				end
-				if not doNotAddItem then
-					--outputCount = outputCount + 1;
-					CuratorSellList[#CuratorSellList + 1] = itemID;
-					Report("Add", "+", itemLink);
-				end
-			end
-		end
-	end
-end
-
-local function Remove(arg)
-	if tonumber(arg) ~= nil then -- We're dealing with numbers.
-		for i in string.gmatch(arg, "%S+") do
-			itemExists = false;
-			for j = 1, #CuratorSellListPerCharacter do
-				if CuratorSellListPerCharacter[j] == tonumber(i) then
-					table.remove(CuratorSellListPerCharacter, j);
-					itemExists = true;
-					break;
-				end
-			end
-			if itemExists then
-				Report("Remove", "+", i);
-			end
-		end
-	else -- We're dealing with item links.
-		local itemLinks = { strsplit("][", arg) };
-	
-		for k, v in ipairs(itemLinks) do
-			itemExists = false;
-			local _, itemLink = GetItemInfo(itemLinks[k]);
-			if itemLink then
-				local itemID = GetItemInfoInstant(itemLink);
-				for i = 1, #CuratorSellListPerCharacter do
-					if CuratorSellListPerCharacter[i] == itemID then
-						table.remove(CuratorSellListPerCharacter, i);
-						itemExists = true;
-						break;
-					end
-				end
-				if itemExists then
-					Report("Remove", "+", itemLink);
-				end
-			end
-		end
-	end
-end
-
-local function RemoveFromAll(arg)
-	if tonumber(arg) ~= nil then -- We're dealing with numbers.
-		for i in string.gmatch(arg, "%S+") do
-			itemExists = false;
-			for j = 1, #CuratorSellList do
-				if CuratorSellList[j] == tonumber(i) then
-					table.remove(CuratorSellList, j);
-					itemExists = true;
-					break;
-				end
-			end
-			if itemExists then
-				Report("Remove", "+", i);
-			end
-		end
-	else -- We're dealing with item links.
-		local itemLinks = { strsplit("][", arg) };
-	
-		for k, v in ipairs(itemLinks) do
-			itemExists = false;
-			local _, itemLink = GetItemInfo(itemLinks[k]);
-			if itemLink then
-				local itemID = GetItemInfoInstant(itemLink);
-				for i = 1, #CuratorSellList do
-					if CuratorSellListPerCharacter[i] == itemID then
-						table.remove(CuratorSellList, i);
-						itemExists = true;
-						break;
-					end
-				end
-				if itemExists then
-					Report("Remove", "+", itemLink);
+					return true;
+				else
+					addItem = true;
+					return false;
 				end
 			end
 		end
@@ -267,7 +164,7 @@ local function HandleKeyPress(self, key)
 		GameTooltip:HookScript("OnTooltipSetItem", GetItemLinkFromTooltip);
 		
 		if tooltipLink then -- On the first key press after logon or reload the tooltip returns a 'nil' value.
-			Add(tooltipLink);
+			Add(tooltipLink, CuratorSellListPerCharacter);
 		end
 	end
 	
@@ -275,23 +172,7 @@ local function HandleKeyPress(self, key)
 		GameTooltip:HookScript("OnTooltipSetItem", GetItemLinkFromTooltip);
 		
 		if tooltipLink then -- On the first key press after logon or reload the tooltip returns a 'nil' value.
-			Remove(tooltipLink);
-		end
-	end
-	
-	if (key == "F7") then -- Add the item to the account list.
-		GameTooltip:HookScript("OnTooltipSetItem", GetItemLinkFromTooltip);
-		
-		if tooltipLink then -- On the first key press after logon or reload the tooltip returns a 'nil' value.
-			AddToAll(tooltipLink);
-		end
-	end
-	
-	if (key == "F8") then -- Remove the item from the account list.
-		GameTooltip:HookScript("OnTooltipSetItem", GetItemLinkFromTooltip);
-		
-		if tooltipLink then -- On the first key press after logon or reload the tooltip returns a 'nil' value.
-			RemoveFromAll(tooltipLink);
+			Add(tooltipLink, CuratorSellList);
 		end
 	end
 end
@@ -346,8 +227,10 @@ frame:SetScript("OnEvent", function(self, event, ...)
 	if event == "MERCHANT_CLOSED" then
 		if profit > 0 then -- The player sold some items.
 			if repairCost > profit then -- The player didn't sell enough (or enough pricey items).
-				print("|cff00ccff" .. curator .. "|r: " .. "Net Loss: " .. GetCoinTextureString("-" .. (repairCost - profit), 12) .. 
-				" (Repair Cost: " .. GetCoinTextureString(repairCost, 8) .. ") " .. "(Profit: " .. GetCoinTextureString(profit, 8) .. ")");
+				print(repairCost);
+				print(profit);
+				--print("|cff00ccff" .. curator .. "|r: " .. "Net Loss: " .. GetCoinTextureString("-" .. (repairCost - profit), 12) .. 
+				--" (Repair Cost: " .. GetCoinTextureString(repairCost, 8) .. ") " .. "(Profit: " .. GetCoinTextureString(profit, 8) .. ")");
 			else -- The profit is higher than the cost of repairs.
 				print("|cff00ccff" .. curator .. "|r: " .. "Sold all items with a net gain of " .. GetCoinTextureString((profit - repairCost), 12) .. 
 				" (-" .. GetCoinTextureString(repairCost, 8) .. ")");
