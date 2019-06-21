@@ -6,4 +6,5 @@
 ## SavedVariables: CuratorSellList
 ## SavedVariablesPerCharacter: CuratorSellListPerCharacter
 
+Locales\Locales.lua
 Init.lua

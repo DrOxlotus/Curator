@@ -7,6 +7,7 @@
 
 -- Addon Variables
 local curator, curatorNS = ...;
+curatorNS.L = L;
 
 -- Module Variables
 local frame = CreateFrame("Frame");
@@ -93,15 +94,15 @@ end
 local function Report(func, ret, val)
 	if func == "Add" then
 		if ret == "+" then
-			print("|cff00ccff" .. curator .. "|r: " .. "Added " .. val .. ".");
+			print(L["ADDON_NAME"] .. L["ADDED_ITEM"] .. val .. ".");
 		end
 	elseif func == "Remove" then
 		if ret == "+" then
-			print("|cff00ccff" .. curator .. "|r: " .. "Removed " .. val .. ".");
+			print(L["ADDON_NAME"] .. L["REMOVED_ITEM"] .. val .. ".");
 		end
 	else
 		if ret == "+" then
-			print("|cff00ccff" .. curator .. "|r: " .. val .. " is already in your account list!");
+			print(L["ADDON_NAME"] .. val .. L["CANNOT_ADD_ITEM"]);
 		end
 	end
 end
@@ -222,7 +223,7 @@ SlashCmdList["curator"] = function(cmd, editbox)
 	local _, _, cmd, args = string.find(cmd, "%s?(%w+)%s?(.*)");
 	
 	if not cmd or cmd == "" then
-		print("|cff00ccff" .. curator .. "|r: " .. "No available commands.");
+		print(L["ADDON_NAME"] .. L["NO_COMMANDS"]);
 	end
 end
 
@@ -265,18 +266,18 @@ frame:SetScript("OnEvent", function(self, event, ...)
 			if repairCost > profit then -- The player didn't sell enough (or enough pricey items).
 				print(repairCost);
 				print(profit);
-				--print("|cff00ccff" .. curator .. "|r: " .. "Net Loss: " .. GetCoinTextureString("-" .. (repairCost - profit), 12) .. 
+				--print(L["ADDON_NAME"] .. "Net Loss: " .. GetCoinTextureString("-" .. (repairCost - profit), 12) .. 
 				--" (Repair Cost: " .. GetCoinTextureString(repairCost, 8) .. ") " .. "(Profit: " .. GetCoinTextureString(profit, 8) .. ")");
 			else -- The profit is higher than the cost of repairs.
-				print("|cff00ccff" .. curator .. "|r: " .. "Sold all items with a net gain of " .. GetCoinTextureString((profit - repairCost), 12) .. 
+				print(L["ADDON_NAME"] .. L["SOLD_ITEMS"] .. GetCoinTextureString((profit - repairCost), 12) .. 
 				" (-" .. GetCoinTextureString(repairCost, 8) .. ")");
 			end
 		elseif repairCost > 0 then -- The player repaired, but sold nothing.
-			print("|cff00ccff" .. curator .. "|r: " .. "Repaired all items at the following cost: " .. GetCoinTextureString(repairCost, 12));
+			print(L["ADDON_NAME"] .. L["REPAIRED_ITEMS"] .. GetCoinTextureString(repairCost, 12));
 		end
 		
 		if deletedItemCount > 0 then
-			print("|cff00ccff" .. curator .. "|r: " .. "Deleted " .. deletedItemCount .. " item(s) with no sell price.");
+			print(L["ADDON_NAME"] .. L["DELETED_ITEM"] .. deletedItemCount .. L["DELETED_ITEM_TEXT"]);
 			deletedItemCount = 0;
 		end
 		
