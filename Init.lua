@@ -47,6 +47,9 @@ local function Contains(itemID)
 	end
 end
 
+-- Module Init
+local scanner = CreateFrame("GameTooltip", "CuratorScanner", UIParent, "GameTooltipTemplate"); scanner:SetOwner(UIParent,"ANCHOR_NONE");
+
 local function CalculateProfit(item, itemCount)
 	local itemProfit = (itemCount * select(11, GetItemInfo(item)));
 	profit = (profit + itemProfit);
@@ -184,10 +187,9 @@ local function Add(arg, tbl)
 end
 
 local function GetItemLinkFromTooltip(tooltip)
-	local _, itemLink = tooltip:GetItem();
-	if not itemLink then
-		return
-	else
+	local itemName, itemLink = tooltip:GetItem();
+	
+	if itemName and itemLink then
 		tooltipLink = itemLink;
 	end
 end
@@ -211,7 +213,6 @@ local function HandleKeyPress(self, key)
 end
 
 -- Event Registrations
-mouseFrame:RegisterEvent("MODIFIER_STATE_CHANGED");
 frame:RegisterEvent("MERCHANT_SHOW");
 frame:RegisterEvent("MERCHANT_CLOSED");
 frame:RegisterEvent("PLAYER_LOGIN");
@@ -284,6 +285,29 @@ frame:SetScript("OnEvent", function(self, event, ...)
 	end
 end);
 
+local function DoesItemExist(tooltip)
+	local frame, text;
+	local _, itemLink = tooltip:GetItem();
+	local itemID = GetItemInfoInstant(itemLink);
+	
+	for i = 1, #CuratorSellList do
+		if CuratorSellList[i] == itemID then
+			tooltip:AddLine("|T" .. "Interface\\ICONS\\INV_Misc_Coin_01" ..":0|t");
+			tooltip:Show();
+			break;
+		end
+	end
+	
+	for j = 1, #CuratorSellListPerCharacter do
+		if CuratorSellListPerCharacter[j] == itemID then
+			tooltip:AddLine("|T" .. "Interface\\ICONS\\INV_Misc_Coin_01" ..":0|t");
+			tooltip:Show();
+			break;
+		end
+	end
+end
+
+GameTooltip:HookScript("OnTooltipSetItem", DoesItemExist);
 mouseFrame:SetScript("OnKeyDown", HandleKeyPress);
 mouseFrame:SetPropagateKeyboardInput(true);
 

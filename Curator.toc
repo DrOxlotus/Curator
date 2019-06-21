@@ -1,5 +1,5 @@
 ## Interface: 80100
-## Version: 1.2.0
+## Version: 1.3.0
 ## Title: Curator
 ## Notes: A per-character and account-wide inventory management system.
 ## Author: Oxlotus - Area 52 (US)
