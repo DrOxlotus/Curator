@@ -7,7 +7,7 @@
 
 -- Addon Variables
 local curator, curatorNS = ...;
-curatorNS.L = L;
+local L = curatorNS.L;
 
 -- Module Variables
 local frame = CreateFrame("Frame");
