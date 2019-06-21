@@ -289,7 +289,12 @@ end);
 local function DoesItemExist(tooltip)
 	local frame, text;
 	local _, itemLink = tooltip:GetItem();
+	
+	if not itemLink then return end;
+	
 	local itemID = GetItemInfoInstant(itemLink);
+	
+	if not itemID then return end;
 	
 	for i = 1, #CuratorSellList do
 		if CuratorSellList[i] == itemID then
