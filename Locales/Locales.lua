@@ -28,7 +28,7 @@ if LOCALE == "enUS" or LOCALE == "enGB" then -- EU/US English
 	L["NO_COMMANDS"] = "No available commands! Commands were deprecated in release 1.2.0.";
 	-- INFO
 	L["SOLD_ITEMS"] = "Sold all items with a net gain of ";
-	L["REPAIRED_ITEMS"] = "Repaired all items at the following cost ";
+	L["REPAIRED_ITEMS"] = "Repaired all items for ";
 	L["DELETED_ITEM_TEXT"] = " item(s) with no sell price.";
 	L["NET_LOSS_TEXT"] = "You had a net loss of -";
 	L["REPAIR_COST_TEXT"] = "Repairs: ";
@@ -46,7 +46,7 @@ if LOCALE == "frFR"  then -- French
 	L["NO_COMMANDS"] = "Aucune commande disponible! Les commandes étaient obsolètes dans la version 1.2.0.";
 	-- INFO
 	L["SOLD_ITEMS"] = "Vendu tous les articles avec un gain net de ";
-	L["REPAIRED_ITEMS"] = "Réparé tous les articles au coût suivant ";
+	L["REPAIRED_ITEMS"] = "Réparé tous les articles pour ";
 	L["DELETED_ITEM_TEXT"] = " article(s) sans prix de vente.";
 	L["NET_LOSS_TEXT"] = "Vous avez eu une perte nette de -";
 	L["REPAIR_COST_TEXT"] = "Réparations: ";
@@ -64,7 +64,7 @@ if LOCALE == "deDE"  then -- German
 	L["NO_COMMANDS"] = "Keine verfügbaren Befehle! Befehle wurden in Version 1.2.0 verworfen.";
 	-- INFO
 	L["SOLD_ITEMS"] = "Verkauft alle Artikel mit einem Nettogewinn von ";
-	L["REPAIRED_ITEMS"] = "Repariert alle Artikel zu folgenden Kosten ";
+	L["REPAIRED_ITEMS"] = "Reparierte alle Einzelteile für ";
 	L["DELETED_ITEM_TEXT"] = " Artikel ohne Verkaufspreis.";
 	L["NET_LOSS_TEXT"] = "Sie hatten einen Nettoverlust von -";
 	L["REPAIR_COST_TEXT"] = "Reparaturen: ";
