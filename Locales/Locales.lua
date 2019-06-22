@@ -30,6 +30,9 @@ if LOCALE == "enUS" or LOCALE == "enGB" then -- EU/US English
 	L["SOLD_ITEMS"] = "Sold all items with a net gain of ";
 	L["REPAIRED_ITEMS"] = "Repaired all items at the following cost ";
 	L["DELETED_ITEM_TEXT"] = " item(s) with no sell price.";
+	L["NET_LOSS_TEXT"] = "You had a net loss of -";
+	L["REPAIR_COST_TEXT"] = "Repairs: ";
+	L["PROFIT_TEXT"] = "Profit: ";
 return end;
 
 if LOCALE == "frFR"  then -- French
@@ -45,6 +48,9 @@ if LOCALE == "frFR"  then -- French
 	L["SOLD_ITEMS"] = "Vendu tous les articles avec un gain net de ";
 	L["REPAIRED_ITEMS"] = "Réparé tous les articles au coût suivant ";
 	L["DELETED_ITEM_TEXT"] = " article(s) sans prix de vente.";
+	L["NET_LOSS_TEXT"] = "Vous avez eu une perte nette de -";
+	L["REPAIR_COST_TEXT"] = "Réparations: ";
+	L["PROFIT_TEXT"] = "Profit: ";
 return end;
 
 if LOCALE == "deDE"  then -- German
@@ -60,4 +66,7 @@ if LOCALE == "deDE"  then -- German
 	L["SOLD_ITEMS"] = "Verkauft alle Artikel mit einem Nettogewinn von ";
 	L["REPAIRED_ITEMS"] = "Repariert alle Artikel zu folgenden Kosten ";
 	L["DELETED_ITEM_TEXT"] = " Artikel ohne Verkaufspreis.";
+	L["NET_LOSS_TEXT"] = "Sie hatten einen Nettoverlust von -";
+	L["REPAIR_COST_TEXT"] = "Reparaturen: ";
+	L["PROFIT_TEXT"] = "Profitieren: ";
 return end;

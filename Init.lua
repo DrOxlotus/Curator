@@ -264,10 +264,9 @@ frame:SetScript("OnEvent", function(self, event, ...)
 	if event == "MERCHANT_CLOSED" then
 		if profit > 0 then -- The player sold some items.
 			if repairCost > profit then -- The player didn't sell enough (or enough pricey items).
-				print(repairCost);
-				print(profit);
-				--print(L["ADDON_NAME"] .. "Net Loss: " .. GetCoinTextureString("-" .. (repairCost - profit), 12) .. 
-				--" (Repair Cost: " .. GetCoinTextureString(repairCost, 8) .. ") " .. "(Profit: " .. GetCoinTextureString(profit, 8) .. ")");
+				print(L["ADDON_NAME"] .. L["NET_LOSS_TEXT"] .. "-" .. GetCoinTextureString((repairCost - profit), 12)); 
+				print(L["ADDON_NAME"] .. L["REPAIR_COST"] .. GetCoinTextureString(repairCost, 8));
+				print(L["ADDON_NAME"] .. L["PROFIT_TEXT"] .. GetCoinTextureString(profit, 8));
 			else -- The profit is higher than the cost of repairs.
 				print(L["ADDON_NAME"] .. L["SOLD_ITEMS"] .. GetCoinTextureString((profit - repairCost), 12) .. 
 				" (-" .. GetCoinTextureString(repairCost, 8) .. ")");
