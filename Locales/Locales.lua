@@ -33,6 +33,8 @@ if LOCALE == "enUS" or LOCALE == "enGB" then -- EU/US English
 	L["NET_LOSS_TEXT"] = "You had a net loss of -";
 	L["REPAIR_COST_TEXT"] = "Repairs: ";
 	L["PROFIT_TEXT"] = "Profit: ";
+	L["ACCOUNT_LIST"] = "|cffe6cc80" .. "Account" .. "|r";
+	L["CHAR_LIST"] = "|cff1eff00" .. GetUnitName("player", false) .. "|r";
 return end;
 
 if LOCALE == "frFR"  then -- French

@@ -297,7 +297,7 @@ local function DoesItemExist(tooltip)
 	
 	for i = 1, #CuratorSellList do
 		if CuratorSellList[i] == itemID then
-			tooltip:AddLine("|T" .. "Interface\\ICONS\\INV_Misc_Coin_01" ..":0|t");
+			tooltip:AddLine(L["ADDON_NAME"] .. L["ACCOUNT_LIST"]);
 			tooltip:Show();
 			break;
 		end
@@ -305,7 +305,7 @@ local function DoesItemExist(tooltip)
 	
 	for j = 1, #CuratorSellListPerCharacter do
 		if CuratorSellListPerCharacter[j] == itemID then
-			tooltip:AddLine("|T" .. "Interface\\ICONS\\INV_Misc_Coin_01" ..":0|t");
+			tooltip:AddLine(L["ADDON_NAME"] .. L["CHAR_LIST"]);
 			tooltip:Show();
 			break;
 		end
