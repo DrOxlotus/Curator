@@ -53,6 +53,8 @@ if LOCALE == "frFR"  then -- French
 	L["NET_LOSS_TEXT"] = "Vous avez eu une perte nette de -";
 	L["REPAIR_COST_TEXT"] = "Réparations: ";
 	L["PROFIT_TEXT"] = "Profit: ";
+	L["ACCOUNT_LIST"] = "|cffe6cc80" .. "Compte" .. "|r";
+	L["CHAR_LIST"] = "|cff1eff00" .. GetUnitName("player", false) .. "|r";
 return end;
 
 if LOCALE == "deDE"  then -- German
@@ -71,4 +73,6 @@ if LOCALE == "deDE"  then -- German
 	L["NET_LOSS_TEXT"] = "Sie hatten einen Nettoverlust von -";
 	L["REPAIR_COST_TEXT"] = "Reparaturen: ";
 	L["PROFIT_TEXT"] = "Profitieren: ";
+	L["ACCOUNT_LIST"] = "|cffe6cc80" .. "Konto" .. "|r";
+	L["CHAR_LIST"] = "|cff1eff00" .. GetUnitName("player", false) .. "|r";
 return end;
