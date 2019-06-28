@@ -261,6 +261,8 @@ frame:SetScript("OnEvent", function(self, event, ...)
 					local playerMoney = GetMoney();
 					if playerMoney > repairCost then -- The player has enough money to fund the repair.
 						RepairAllItems();
+					else
+						print(L["ADDON_NAME"] .. L["LOW_FUNDS"]);
 					end
 				end
 			end

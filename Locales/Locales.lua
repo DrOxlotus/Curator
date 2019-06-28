@@ -26,6 +26,7 @@ if LOCALE == "enUS" or LOCALE == "enGB" then -- EU/US English
 	-- ERRORS
 	L["CANNOT_ADD_ITEM"] = " already exists in your account list!";
 	L["NO_COMMANDS"] = "No available commands! Commands were deprecated in release 1.2.0.";
+	L["LOW_FUNDS"] = "Unable to repair. Lack of funds!";
 	-- INFO
 	L["SOLD_ITEMS"] = "Sold all items with a net gain of ";
 	L["REPAIRED_ITEMS"] = "Repaired all items for ";
@@ -46,6 +47,7 @@ if LOCALE == "frFR"  then -- French
 	-- ERRORS
 	L["CANNOT_ADD_ITEM"] = " existe déjà dans votre liste de compte!";
 	L["NO_COMMANDS"] = "Aucune commande disponible! Les commandes étaient obsolètes dans la version 1.2.0.";
+	L["LOW_FUNDS"] = "Impossible de réparer. Manque de fonds!";
 	-- INFO
 	L["SOLD_ITEMS"] = "Vendu tous les articles avec un gain net de ";
 	L["REPAIRED_ITEMS"] = "Réparé tous les articles pour ";
@@ -66,6 +68,7 @@ if LOCALE == "deDE"  then -- German
 	-- ERRORS
 	L["CANNOT_ADD_ITEM"] = " ist bereits in Ihrer Kontoliste vorhanden!";
 	L["NO_COMMANDS"] = "Keine verfügbaren Befehle! Befehle wurden in Version 1.2.0 verworfen.";
+	L["LOW_FUNDS"] = "Reparatur nicht möglich. Geldmangel!";
 	-- INFO
 	L["SOLD_ITEMS"] = "Verkauft alle Artikel mit einem Nettogewinn von ";
 	L["REPAIRED_ITEMS"] = "Reparierte alle Einzelteile für ";
