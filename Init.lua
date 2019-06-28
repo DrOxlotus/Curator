@@ -249,12 +249,19 @@ frame:SetScript("OnEvent", function(self, event, ...)
 
 	if event == "MERCHANT_SHOW" then
 		local canRepair = CanMerchantRepair();
+		local canGuildBankRepair = CanGuildBankRepair();
 		repairCost = GetRepairAllCost();
 		if canRepair then -- The current merchant has the repair option.
-			if repairCost > 0 then -- The player has items that need repaired.
-				local playerMoney = GetMoney();
-				if playerMoney > repairCost then -- The player has enough money to fund the repair.
-					RepairAllItems();
+			if canGuildBankRepair then -- The player can use guild repairs.
+				if repairCost > 0 then -- The player has items that need repaired.
+					RepairAllItems(1); -- Uses guild bank money to fund the repairs.
+				end
+			else
+				if repairCost > 0 then -- The player has items that need repaired.
+					local playerMoney = GetMoney();
+					if playerMoney > repairCost then -- The player has enough money to fund the repair.
+						RepairAllItems();
+					end
 				end
 			end
 		end
