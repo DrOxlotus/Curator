@@ -8,3 +8,4 @@
 
 Locales\Locales.lua
 Init.lua
+Inventory.lua
