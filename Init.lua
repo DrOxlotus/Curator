@@ -21,6 +21,11 @@ local itemHasNoSellPrice = false;
 local tooltipLink;
 local repairCost;
 
+-- Bindings
+BINDING_HEADER_CURATOR = string.upper(L["ADDON_NAME"]);
+BINDING_NAME_CURATOR_ACCOUNT_LIST = L["BINDING_CURATOR_ACCOUNT_LIST"];
+BINDING_NAME_CURATOR_CHARACTER_LIST = L["BINDING_CURATOR_CHARACTER_LIST"];
+
 -- Module Functions
 local function Contains(itemID)
 	for i = 1, #CuratorSellListPerCharacter do
@@ -195,19 +200,18 @@ local function GetItemLinkFromTooltip(tooltip)
 	end
 end
 
-local function HandleKeyPress(self, key)
-	if (key == "F5") then -- Add the item to the character list.
+-- The first tooltip after login returns 'nil'. Ask Blizzard; I have no idea...
+function CuratorHandleKeyPress(key)
+	if (key == GetBindingKey("CURATOR_CHARACTER_LIST")) then -- Character List
 		GameTooltip:HookScript("OnTooltipSetItem", GetItemLinkFromTooltip);
 		
-		if tooltipLink then -- On the first key press after logon or reload the tooltip returns a 'nil' value.
+		if tooltipLink then
 			Add(tooltipLink, CuratorSellListPerCharacter);
 		end
-	end
-	
-	if (key == "F6") then -- Remove the item from the character list.
+	elseif (key == GetBindingKey("CURATOR_ACCOUNT_LIST")) then -- Account List
 		GameTooltip:HookScript("OnTooltipSetItem", GetItemLinkFromTooltip);
 		
-		if tooltipLink then -- On the first key press after logon or reload the tooltip returns a 'nil' value.
+		if tooltipLink then
 			Add(tooltipLink, CuratorSellList);
 		end
 	end
@@ -228,7 +232,6 @@ SlashCmdList["curator"] = function(cmd, editbox)
 end
 
 frame:SetScript("OnEvent", function(self, event, ...)
-
 	if event == "PLAYER_LOGIN" and isAddonLoaded then
 		if CuratorSellListPerCharacter == nil then
 			CuratorSellListPerCharacter = {};

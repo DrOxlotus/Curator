@@ -1,0 +1,8 @@
+<Bindings>
+	<Binding name="CURATOR_ACCOUNT_LIST" header="CURATOR" category="ADDONS">
+		CuratorHandleKeyPress(GetBindingKey("CURATOR_ACCOUNT_LIST"));
+	</Binding>
+	<Binding name="CURATOR_CHARACTER_LIST" category="ADDONS">
+		CuratorHandleKeyPress(GetBindingKey("CURATOR_CHARACTER_LIST"));
+	</Binding>
+</Bindings>

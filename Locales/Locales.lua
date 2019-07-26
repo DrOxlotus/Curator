@@ -36,6 +36,9 @@ if LOCALE == "enUS" or LOCALE == "enGB" then -- EU/US English
 	L["PROFIT_TEXT"] = "Profit: ";
 	L["ACCOUNT_LIST"] = "|cffe6cc80" .. "Account" .. "|r";
 	L["CHAR_LIST"] = "|cff1eff00" .. GetUnitName("player", false) .. "|r";
+	-- BINDINGS
+	L["BINDING_CURATOR_ACCOUNT_LIST"] = "Account List";
+	L["BINDING_CURATOR_CHARACTER_LIST"] = "Character List";
 return end;
 
 if LOCALE == "frFR"  then -- French
