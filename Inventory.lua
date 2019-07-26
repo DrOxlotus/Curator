@@ -27,7 +27,7 @@ local function SetGlowOnContainerItem(bagID, slotID)
 	end
 end
 
-local function ScanInventory()
+curatorNS.ScanInventory = function()
 	local bagID = 0;
 	local slotID = 0;
 	local recentPrice = nil; -- This represents the cheapest item in copper.
@@ -57,7 +57,6 @@ local function ScanInventory()
 	end
 end
 
-eventFrame:RegisterEvent("MODIFIER_STATE_CHANGED");
 eventFrame:SetScript("OnEvent", function(self, event, key, state)
 	if key == "LALT" and state == 1 then
 		local areBagsOpen = false;

@@ -25,6 +25,7 @@ local repairCost;
 BINDING_HEADER_CURATOR = string.upper(L["ADDON_NAME"]);
 BINDING_NAME_CURATOR_ACCOUNT_LIST = L["BINDING_CURATOR_ACCOUNT_LIST"];
 BINDING_NAME_CURATOR_CHARACTER_LIST = L["BINDING_CURATOR_CHARACTER_LIST"];
+BINDING_NAME_CURATOR_CHEAPEST_ITEM = L["BINDING_CURATOR_CHEAPEST_ITEM"];
 
 -- Module Functions
 local function Contains(itemID)
@@ -64,7 +65,6 @@ local function CalculateProfit(item, itemCount)
 end
 
 local function ScanInventory()
-	
 	for i = 0, (NUM_BAG_FRAMES + 1) do -- The constant is equal to 4.
 		for j = 1, GetContainerNumSlots(i) do
 			local _, itemCount, _, quality, _, _, itemLink, _, _, itemID = GetContainerItemInfo(i, j);
@@ -214,6 +214,8 @@ function CuratorHandleKeyPress(key)
 		if tooltipLink then
 			Add(tooltipLink, CuratorSellList);
 		end
+	elseif (key == GetBindingKey("CURATOR_CHEAPEST_ITEM")) then -- Identify Cheapest Item
+		curatorNS.ScanInventory();
 	end
 end
 

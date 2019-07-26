@@ -39,6 +39,7 @@ if LOCALE == "enUS" or LOCALE == "enGB" then -- EU/US English
 	-- BINDINGS
 	L["BINDING_CURATOR_ACCOUNT_LIST"] = "Account List";
 	L["BINDING_CURATOR_CHARACTER_LIST"] = "Character List";
+	L["BINDING_CURATOR_CHEAPEST_ITEM"] = "Identify Cheapest Item";
 return end;
 
 if LOCALE == "frFR"  then -- French
@@ -63,6 +64,7 @@ if LOCALE == "frFR"  then -- French
 	-- BINDINGS
 	L["BINDING_CURATOR_ACCOUNT_LIST"] = "Compte Liste";
 	L["BINDING_CURATOR_CHARACTER_LIST"] = "Personnage Liste";
+	L["BINDING_CURATOR_CHEAPEST_ITEM"] = "Identifier l'article le moins cher";
 return end;
 
 if LOCALE == "deDE"  then -- German
@@ -87,4 +89,5 @@ if LOCALE == "deDE"  then -- German
 	-- BINDINGS
 	L["BINDING_CURATOR_ACCOUNT_LIST"] = "Konto Liste";
 	L["BINDING_CURATOR_CHARACTER_LIST"] = "Charakter Liste";
+	L["BINDING_CURATOR_CHEAPEST_ITEM"] = "Identifizieren Sie den günstigsten Artikel";
 return end;
