@@ -60,6 +60,9 @@ if LOCALE == "frFR"  then -- French
 	L["PROFIT_TEXT"] = "Profit: ";
 	L["ACCOUNT_LIST"] = "|cffe6cc80" .. "Compte" .. "|r";
 	L["CHAR_LIST"] = "|cff1eff00" .. GetUnitName("player", false) .. "|r";
+	-- BINDINGS
+	L["BINDING_CURATOR_ACCOUNT_LIST"] = "Compte Liste";
+	L["BINDING_CURATOR_CHARACTER_LIST"] = "Personnage Liste";
 return end;
 
 if LOCALE == "deDE"  then -- German
@@ -81,4 +84,7 @@ if LOCALE == "deDE"  then -- German
 	L["PROFIT_TEXT"] = "Profitieren: ";
 	L["ACCOUNT_LIST"] = "|cffe6cc80" .. "Konto" .. "|r";
 	L["CHAR_LIST"] = "|cff1eff00" .. GetUnitName("player", false) .. "|r";
+	-- BINDINGS
+	L["BINDING_CURATOR_ACCOUNT_LIST"] = "Konto Liste";
+	L["BINDING_CURATOR_CHARACTER_LIST"] = "Charakter Liste";
 return end;
