@@ -1,0 +1,3 @@
+package-as: Curator
+
+manual-changelog: .CHANGES.txt
