@@ -8,18 +8,20 @@
 -- Addon Variables
 local curator, curatorNS = ...;
 local L = curatorNS.L;
+curatorNS.totalProfit = 0;
 
 -- Module Variables
 local frame = CreateFrame("Frame");
 local mouseFrame = CreateFrame("Frame", "MouseFrame", UIParent);
 local isAddonLoaded = IsAddOnLoaded("Curator");
-local profit = 0;
 local deletedItemCount = 0;
 local addItem = true;
 local itemExists = false;
 local itemHasNoSellPrice = false;
 local tooltipLink;
 local repairCost;
+local sellPrice = 0;
+local sellIndices = {};
 
 -- Bindings
 BINDING_HEADER_CURATOR = string.upper(L["ADDON_NAME"]);
@@ -58,11 +60,30 @@ end
 local scanner = CreateFrame("GameTooltip", "CuratorScanner", UIParent, "GameTooltipTemplate"); scanner:SetOwner(UIParent,"ANCHOR_NONE");
 
 local function CalculateProfit(item, itemCount)
-	if item then
+	if (item) then
 		local itemProfit = (itemCount * select(11, GetItemInfo(item)));
-		profit = (profit + itemProfit);
-		
 		return itemProfit or 0;
+	end
+end
+
+local function SellItems(tbl)
+	if (next(tbl) ~= nil) then
+		for itemID, itemInfo in pairs(tbl) do
+			for key, value in pairs(itemInfo) do
+				if (key == "sellPrice") then
+					if (value > 0) then
+						curatorNS.totalProfit = curatorNS.totalProfit + tbl[itemID]["sellPrice"];
+						UseContainerItem(tbl[itemID]["bag"], tbl[itemID]["slot"]);
+					else
+						PickupContainerItem(tbl[itemID]["bag"], tbl[itemID]["slot"]);
+						DeleteCursorItem();
+						deletedItemCount = deletedItemCount + 1;
+					end
+				end
+			end
+		end
+	else
+		print(L["ADDON_NAME"] .. L["NO_ITEMS"]);
 	end
 end
 
@@ -72,30 +93,30 @@ local function ScanInventory()
 			local _, itemCount, _, quality, _, _, itemLink, _, _, itemID = GetContainerItemInfo(i, j);
 			
 			if itemID then -- This accounts for empty slots and items without an ID.
-				if quality < 1 then -- This is a poor quality item.
-					if CalculateProfit(itemID, itemCount) > 0 then
-						UseContainerItem(i, j);
-					else
-						PickupContainerItem(i, j);
-						DeleteCursorItem();
-						deletedItemCount = deletedItemCount + 1;
-					end
-				else
-					if Contains(itemID) then -- This is an item that the player added to the database.
-						if itemHasNoSellPrice then
-							PickupContainerItem(i, j);
-							DeleteCursorItem();
-							deletedItemCount = deletedItemCount + 1;
+				if (itemCount) then
+					if (quality < 1) then -- This is a poor quality item.
+						if (CalculateProfit(itemID, itemCount) > 0) then
+							sellPrice = CalculateProfit(itemID, itemCount);
+							sellIndices[itemID] = {bag = i, slot = j, sellPrice = sellPrice};
 						else
-							local itemString = string.match(select(3, strfind(itemLink, "|H(.+)|h")), "(.*)%[");
-							CalculateProfit(itemString, itemCount);
-							UseContainerItem(i, j);
+							sellIndices[itemID] = {bag = i, slot = j, sellPrice = 0};
+						end
+					else
+						if (Contains(itemID)) then -- This is an item that the player added to the database.
+							if (itemHasNoSellPrice) then
+								sellIndices[itemID] = {bag = i, slot = j, sellPrice = 0};
+							else
+								local itemString = string.match(select(3, strfind(itemLink, "|H(.+)|h")), "(.*)%[");
+								sellPrice = CalculateProfit(itemString, itemCount);
+								sellIndices[itemID] = {bag = i, slot = j, sellPrice = sellPrice};
+							end
 						end
 					end
 				end
 			end
 		end
 	end
+	SellItems(sellIndices);
 end
 
 local function Report(func, ret, val)
@@ -287,13 +308,13 @@ frame:SetScript("OnEvent", function(self, event, ...)
 	end
 	
 	if event == "MERCHANT_CLOSED" then
-		if profit > 0 then -- The player sold some items.
-			if repairCost > profit then -- The player didn't sell enough (or enough pricey items).
-				print(L["ADDON_NAME"] .. L["NET_LOSS_TEXT"] .. GetCoinTextureString((repairCost - profit), 12)); 
+		if (curatorNS.totalProfit > 0) then -- The player sold some items.
+			if (repairCost > curatorNS.totalProfit) then -- The player didn't sell enough (or enough pricey items).
+				print(L["ADDON_NAME"] .. L["NET_LOSS_TEXT"] .. GetCoinTextureString((repairCost - curatorNS.totalProfit), 12)); 
 				print(L["ADDON_NAME"] .. L["REPAIR_COST_TEXT"] .. GetCoinTextureString(repairCost, 8));
-				print(L["ADDON_NAME"] .. L["PROFIT_TEXT"] .. GetCoinTextureString(profit, 8));
+				print(L["ADDON_NAME"] .. L["PROFIT_TEXT"] .. GetCoinTextureString(curatorNS.totalProfit, 8));
 			else -- The profit is higher than the cost of repairs.
-				print(L["ADDON_NAME"] .. L["SOLD_ITEMS"] .. GetCoinTextureString((profit - repairCost), 12) .. 
+				print(L["ADDON_NAME"] .. L["SOLD_ITEMS"] .. GetCoinTextureString((curatorNS.totalProfit - repairCost), 12) .. 
 				" (-" .. GetCoinTextureString(repairCost, 8) .. ")");
 			end
 		elseif repairCost > 0 then -- The player repaired, but sold nothing.
@@ -305,8 +326,8 @@ frame:SetScript("OnEvent", function(self, event, ...)
 			deletedItemCount = 0;
 		end
 		
-		profit = 0;
 		repairCost = 0;
+		curatorNS.totalProfit = 0;
 	end
 end);
 

@@ -25,8 +25,9 @@ if LOCALE == "enUS" or LOCALE == "enGB" then -- EU/US English
 	L["DELETED_ITEM"] = "Deleted ";
 	-- ERRORS
 	L["CANNOT_ADD_ITEM"] = " already exists in your account list!";
-	L["NO_COMMANDS"] = "No available commands! Commands were deprecated in release 1.2.0.";
 	L["LOW_FUNDS"] = "Unable to repair. Lack of funds!";
+	L["NO_COMMANDS"] = "No available commands! Commands were deprecated in release 1.2.0.";
+	L["NO_ITEMS"] = "There are no items to sell or delete.";
 	-- INFO
 	L["SOLD_ITEMS"] = "Sold all items with a net gain of ";
 	L["REPAIRED_ITEMS"] = "Repaired all items for ";
