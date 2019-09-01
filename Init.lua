@@ -82,9 +82,17 @@ local function SellItems(tbl)
 				end
 			end
 		end
+		print(L["ADDON_NAME"] .. L["SOLD_ITEMS"] .. GetCoinTextureString(curatorNS.totalProfit, 12));
 	else
 		print(L["ADDON_NAME"] .. L["NO_ITEMS"]);
 	end
+	
+	if deletedItemCount > 0 then
+		print(L["ADDON_NAME"] .. L["DELETED_ITEM"] .. deletedItemCount .. L["DELETED_ITEM_TEXT"]);
+		deletedItemCount = 0;
+	end
+	
+	curatorNS.totalProfit = 0;
 end
 
 local function ScanInventory()
@@ -320,14 +328,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
 		elseif repairCost > 0 then -- The player repaired, but sold nothing.
 			print(L["ADDON_NAME"] .. L["REPAIRED_ITEMS"] .. GetCoinTextureString(repairCost, 12));
 		end
-		
-		if deletedItemCount > 0 then
-			print(L["ADDON_NAME"] .. L["DELETED_ITEM"] .. deletedItemCount .. L["DELETED_ITEM_TEXT"]);
-			deletedItemCount = 0;
-		end
-		
 		repairCost = 0;
-		curatorNS.totalProfit = 0;
 	end
 end);
 

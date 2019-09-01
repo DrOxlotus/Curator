@@ -29,7 +29,7 @@ if LOCALE == "enUS" or LOCALE == "enGB" then -- EU/US English
 	L["NO_COMMANDS"] = "No available commands! Commands were deprecated in release 1.2.0.";
 	L["NO_ITEMS"] = "There are no items to sell or delete.";
 	-- INFO
-	L["SOLD_ITEMS"] = "Sold all items with a net gain of ";
+	L["SOLD_ITEMS"] = "Sold item(s) for a net gain of ";
 	L["REPAIRED_ITEMS"] = "Repaired all items for ";
 	L["DELETED_ITEM_TEXT"] = " item(s) with no sell price.";
 	L["NET_LOSS_TEXT"] = "You had a net loss of -";
