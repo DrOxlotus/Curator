@@ -58,10 +58,12 @@ end
 local scanner = CreateFrame("GameTooltip", "CuratorScanner", UIParent, "GameTooltipTemplate"); scanner:SetOwner(UIParent,"ANCHOR_NONE");
 
 local function CalculateProfit(item, itemCount)
-	local itemProfit = (itemCount * select(11, GetItemInfo(item)));
-	profit = (profit + itemProfit);
-	
-	return itemProfit;
+	if item then
+		local itemProfit = (itemCount * select(11, GetItemInfo(item)));
+		profit = (profit + itemProfit);
+		
+		return itemProfit or 0;
+	end
 end
 
 local function ScanInventory()
@@ -99,11 +101,11 @@ end
 local function Report(func, ret, val)
 	if func == "Add" then
 		if ret == "+" then
-			print(L["ADDON_NAME"] .. L["ADDED_ITEM"] .. val .. ".");
+			--print(L["ADDON_NAME"] .. L["ADDED_ITEM"] .. val .. ".");
 		end
 	elseif func == "Remove" then
 		if ret == "+" then
-			print(L["ADDON_NAME"] .. L["REMOVED_ITEM"] .. val .. ".");
+			--print(L["ADDON_NAME"] .. L["REMOVED_ITEM"] .. val .. ".");
 		end
 	else
 		if ret == "+" then
@@ -125,7 +127,7 @@ local function Add(arg, tbl)
 				if tbl[index] == i then
 					addItem = false;
 					Remove(i, tbl, index);
-					Report("Remove", "+", i);
+					--Report("Remove", "+", i);
 					break;
 				end
 			end
@@ -145,7 +147,7 @@ local function Add(arg, tbl)
 			end
 			if addItem then
 				tbl[#tbl + 1] = tonumber(i);
-				Report("Add", "+", i);
+				--Report("Add", "+", i);
 				return true;
 			else
 				addItem = true;
@@ -181,7 +183,7 @@ local function Add(arg, tbl)
 				end
 				if addItem then
 					tbl[#tbl + 1] = tonumber(itemID);
-					Report("Add", "+", itemLink);
+					--Report("Add", "+", itemLink);
 					return true;
 				else
 					addItem = true;

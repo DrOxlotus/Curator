@@ -1,7 +1,7 @@
 --[[
-	Project			: lastSeen © 2019
+	Project			: Curator © 2019
 	Author			: Oxlotus - Area 52-US
-	Date Created	: 2019-04-19
+	Date Created	: 2019-06-28
 	Purpose			: The powerhouse of all of the addon's localization.
 ]]--
 
@@ -34,8 +34,9 @@ if LOCALE == "enUS" or LOCALE == "enGB" then -- EU/US English
 	L["NET_LOSS_TEXT"] = "You had a net loss of -";
 	L["REPAIR_COST_TEXT"] = "Repairs: ";
 	L["PROFIT_TEXT"] = "Profit: ";
-	L["ACCOUNT_LIST"] = "|cffe6cc80" .. "Account" .. "|r";
-	L["CHAR_LIST"] = "|cff1eff00" .. GetUnitName("player", false) .. "|r";
+	-- TOOLTIPS
+	L["ACCOUNT_LIST"] = "This item is a member of your Account list.";
+	L["CHAR_LIST"] = "This item is a member of your Character list.";
 	-- BINDINGS
 	L["BINDING_CURATOR_ACCOUNT_LIST"] = "Account List";
 	L["BINDING_CURATOR_CHARACTER_LIST"] = "Character List";
@@ -59,8 +60,9 @@ if LOCALE == "frFR"  then -- French
 	L["NET_LOSS_TEXT"] = "Vous avez eu une perte nette de -";
 	L["REPAIR_COST_TEXT"] = "Réparations: ";
 	L["PROFIT_TEXT"] = "Profit: ";
-	L["ACCOUNT_LIST"] = "|cffe6cc80" .. "Compte" .. "|r";
-	L["CHAR_LIST"] = "|cff1eff00" .. GetUnitName("player", false) .. "|r";
+	-- TOOLTIPS
+	L["ACCOUNT_LIST"] = "Cet élément est un membre de votre liste de compte.";
+	L["CHAR_LIST"] = "Cet objet est un membre de votre liste de personnages.";
 	-- BINDINGS
 	L["BINDING_CURATOR_ACCOUNT_LIST"] = "Compte Liste";
 	L["BINDING_CURATOR_CHARACTER_LIST"] = "Personnage Liste";
@@ -84,8 +86,9 @@ if LOCALE == "deDE"  then -- German
 	L["NET_LOSS_TEXT"] = "Sie hatten einen Nettoverlust von -";
 	L["REPAIR_COST_TEXT"] = "Reparaturen: ";
 	L["PROFIT_TEXT"] = "Profitieren: ";
-	L["ACCOUNT_LIST"] = "|cffe6cc80" .. "Konto" .. "|r";
-	L["CHAR_LIST"] = "|cff1eff00" .. GetUnitName("player", false) .. "|r";
+	-- TOOLTIPS
+	L["ACCOUNT_LIST"] = "Dieser Artikel ist ein Mitglied Ihrer Kontoliste.";
+	L["CHAR_LIST"] = "Dieser Gegenstand ist ein Mitglied deiner Charakterliste.";
 	-- BINDINGS
 	L["BINDING_CURATOR_ACCOUNT_LIST"] = "Konto Liste";
 	L["BINDING_CURATOR_CHARACTER_LIST"] = "Charakter Liste";
