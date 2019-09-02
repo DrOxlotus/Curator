@@ -42,9 +42,10 @@ if LOCALE == "enUS" or LOCALE == "enGB" then -- EU/US English
 	L["BINDING_CURATOR_ACCOUNT_LIST"] = "Account List";
 	L["BINDING_CURATOR_CHARACTER_LIST"] = "Character List";
 	L["BINDING_CURATOR_CHEAPEST_ITEM"] = "Identify Cheapest Item";
+	L["BINDING_CURATOR_DISPLAY_INFO"] = "Disable Item Info";
 return end;
 
-if LOCALE == "frFR"  then -- French
+if LOCALE == "frFR" then -- French
 	-- GENERAL
 	L["ADDON_NAME"] = "|cff00ccff" .. curator .. "|r: ";
 	L["ADDED_ITEM"] = "Ajoutée ";
@@ -70,7 +71,7 @@ if LOCALE == "frFR"  then -- French
 	L["BINDING_CURATOR_CHEAPEST_ITEM"] = "Identifier l'article le moins cher";
 return end;
 
-if LOCALE == "deDE"  then -- German
+if LOCALE == "deDE" then -- German
 	-- GENERAL
 	L["ADDON_NAME"] = "|cff00ccff" .. curator .. "|r: ";
 	L["ADDED_ITEM"] = "Hinzugefügt ";
@@ -94,4 +95,32 @@ if LOCALE == "deDE"  then -- German
 	L["BINDING_CURATOR_ACCOUNT_LIST"] = "Konto Liste";
 	L["BINDING_CURATOR_CHARACTER_LIST"] = "Charakter Liste";
 	L["BINDING_CURATOR_CHEAPEST_ITEM"] = "Identifizieren Sie den günstigsten Artikel";
+return end;
+
+if LOCALE == "ruRU" then -- Russian
+	-- GENERAL
+	L["ADDON_NAME"] = "|cff00ccff" .. curatorClassic .. "|r: ";
+	L["ADDED_ITEM"] = "Добавить ";
+	L["REMOVED_ITEM"] = "Удалены ";
+	L["DELETED_ITEM"] = "Удалить ";
+	-- ERRORS
+	L["CANNOT_ADD_ITEM"] = " уже существует на вашем аккаунте!";
+	L["NO_COMMANDS"] = "Нет доступных команд! Команды устарели в версии 1.2.0.";
+	L["LOW_FUNDS"] = "Невозможно починить. Недостаток средств!";
+	-- INFO
+	L["SOLD_ITEMS"] = "Проданы все предметы с чистой прибылью ";
+	L["REPAIRED_ITEMS"] = "Отремонтировал все предметы для ";
+	L["DELETED_ITEM_TEXT"] = " Предметы без цены продажи.";
+	L["NET_LOSS_TEXT"] = "У вас был чистый убыток -";
+	L["REPAIR_COST_TEXT"] = "Ремонт: ";
+	L["PROFIT_TEXT"] = "Прибыль: ";
+	-- TOOLTIPS
+	L["SELL_PRICE"] = "|cffffffffЦена Продажи:|r ";
+	L["NO_SELL_PRICE"] = "|cffffffffНет продажной цены|r";
+	L["ACCOUNT_LIST"] = "Этот предмет привязан к Списку Аккаунтов.";
+	L["CHAR_LIST"] = "Этот предмет привязан к Списку Персонажей.";
+	-- BINDINGS
+	L["BINDING_CURATORCLASSIC_ACCOUNT_LIST"] = "Список аккаунтов";
+	L["BINDING_CURATORCLASSIC_CHARACTER_LIST"] = "Список персонажей";
+	L["BINDING_CURATORCLASSIC_CHEAPEST_ITEM"] = "Определить самый дешевый товар";
 return end;

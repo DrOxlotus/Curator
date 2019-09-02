@@ -16,6 +16,7 @@ local mouseFrame = CreateFrame("Frame", "MouseFrame", UIParent);
 local isAddonLoaded = IsAddOnLoaded("Curator");
 local deletedItemCount = 0;
 local addItem = true;
+local doNotDisplayItemInfo = false;
 local itemExists = false;
 local itemHasNoSellPrice = false;
 local tooltipLink;
@@ -28,6 +29,7 @@ BINDING_HEADER_CURATOR = string.upper(L["ADDON_NAME"]);
 BINDING_NAME_CURATOR_ACCOUNT_LIST = L["BINDING_CURATOR_ACCOUNT_LIST"];
 BINDING_NAME_CURATOR_CHARACTER_LIST = L["BINDING_CURATOR_CHARACTER_LIST"];
 BINDING_NAME_CURATOR_CHEAPEST_ITEM = L["BINDING_CURATOR_CHEAPEST_ITEM"];
+BINDING_NAME_CURATOR_DISABLE_DISPLAY_INFO = L["BINDING_CURATOR_DISPLAY_INFO"];
 
 -- Module Functions
 local function Contains(itemID)
@@ -223,6 +225,41 @@ local function Add(arg, tbl)
 	end
 end
 
+local function DisplayItemInfo(tooltip)
+	if (CuratorSettings["disableDisplayInfo"] == false) then
+		local _, itemLink = tooltip:GetItem();
+		local itemID;
+		
+		if (itemLink) then
+			local numLines = tooltip:NumLines();
+			itemID = (GetItemInfoInstant(itemLink));
+			
+			if (itemID) then
+				if (CuratorItemInfo[itemID]) then -- Update Item Info
+					if (CuratorItemInfoPerCharacter[itemID]) then
+						for k, v in pairs(CuratorItemInfoPerCharacter[itemID]) do
+							if (v == "count") then CuratorItemInfoPerCharacter[itemID][v] = GetItemCount(itemID, true) end;
+						end
+					else
+						CuratorItemInfoPerCharacter[itemID] = {count = GetItemCount(itemID, true)};
+					end
+					
+					tooltip:AddDoubleLine("Item ID\n" .. "Stack\n" .. "Count", itemID .. "\n" .. CuratorItemInfo[itemID]["maxStackCount"] .. "\n" .. 
+					CuratorItemInfoPerCharacter[itemID]["count"] .. " (" .. CuratorItemInfo[itemID]["count"] .. ")", 1, 1, 0, 1, 1, 1);
+					tooltip:Show();
+				else -- Add Item Info
+					CuratorItemInfo[itemID] = {maxStackCount = select(8, GetItemInfo(itemID)), count = GetItemCount(itemID, true)};
+					CuratorItemInfoPerCharacter[itemID] = {count = GetItemCount(itemID, true)};
+					
+					tooltip:AddDoubleLine("Item ID\n" .. "Stack\n" .. "Count", itemID .. "\n" .. CuratorItemInfo[itemID]["maxStackCount"] .. "\n" .. 
+					CuratorItemInfoPerCharacter[itemID]["count"] .. " (" .. CuratorItemInfo[itemID]["count"] .. ")", 1, 1, 0, 1, 1, 1);
+					tooltip:Show();
+				end
+			end
+		end
+	end
+end
+
 local function GetItemLinkFromTooltip(tooltip)
 	local itemName, itemLink = tooltip:GetItem();
 	
@@ -247,6 +284,12 @@ function CuratorHandleKeyPress(key)
 		end
 	elseif (key == GetBindingKey("CURATOR_CHEAPEST_ITEM")) then -- Identify Cheapest Item
 		curatorNS.ScanInventory();
+	elseif (key == GetBindingKey("CURATOR_DISABLE_DISPLAY_INFO")) then -- Disable Display Item Info
+		if (CuratorSettings["disableDisplayInfo"] == true) then
+			CuratorSettings["disableDisplayInfo"] = false;
+		else
+			CuratorSettings["disableDisplayInfo"] = true;
+		end
 	end
 end
 
@@ -266,12 +309,25 @@ end
 
 frame:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_LOGIN" and isAddonLoaded then
+		if CuratorSettings == nil then
+			CuratorSettings = {};
+			CuratorSettings["disableDisplayInfo"] = false;
+		end
+		
 		if CuratorSellListPerCharacter == nil then
 			CuratorSellListPerCharacter = {};
 		end
 		
 		if CuratorSellList == nil then
 			CuratorSellList = {};
+		end
+		
+		if (CuratorItemInfo == nil) then
+			CuratorItemInfo = {};
+		end
+		
+		if (CuratorItemInfoPerCharacter == nil) then
+			CuratorItemInfoPerCharacter = {};
 		end
 		
 		for i, j in ipairs(CuratorSellList) do
@@ -281,6 +337,8 @@ frame:SetScript("OnEvent", function(self, event, ...)
 				end
 			end
 		end
+		
+		GameTooltip:HookScript("OnTooltipSetItem", DisplayItemInfo);
 	end
 
 	if event == "MERCHANT_SHOW" then

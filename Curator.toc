@@ -4,8 +4,8 @@
 ## Title: Curator
 ## Notes: A per-character and account-wide inventory management system.
 ## Author: Oxlotus - Area 52 (US)
-## SavedVariables: CuratorSellList
-## SavedVariablesPerCharacter: CuratorSellListPerCharacter
+## SavedVariables: CuratorSellList, CuratorItemInfo, CuratorSettings
+## SavedVariablesPerCharacter: CuratorSellListPerCharacter, CuratorItemInfoPerCharacter
 
 Locales\Locales.lua
 Init.lua
