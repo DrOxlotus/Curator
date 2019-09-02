@@ -231,18 +231,12 @@ local function DisplayItemInfo(tooltip)
 		local itemID;
 		
 		if (itemLink) then
-			local numLines = tooltip:NumLines();
 			itemID = (GetItemInfoInstant(itemLink));
 			
 			if (itemID) then
 				if (CuratorItemInfo[itemID]) then -- Update Item Info
-					if (CuratorItemInfoPerCharacter[itemID]) then
-						for k, v in pairs(CuratorItemInfoPerCharacter[itemID]) do
-							if (v == "count") then CuratorItemInfoPerCharacter[itemID][v] = GetItemCount(itemID, true) end;
-						end
-					else
-						CuratorItemInfoPerCharacter[itemID] = {count = GetItemCount(itemID, true)};
-					end
+					CuratorItemInfo[itemID]["count"] = CuratorItemInfo[itemID]["count"] + GetItemCount(itemID, true);
+					CuratorItemInfoPerCharacter[itemID]["count"] = GetItemCount(itemID, true);
 					
 					tooltip:AddDoubleLine("Item ID\n" .. "Stack\n" .. "Count", itemID .. "\n" .. CuratorItemInfo[itemID]["maxStackCount"] .. "\n" .. 
 					CuratorItemInfoPerCharacter[itemID]["count"] .. " (" .. CuratorItemInfo[itemID]["count"] .. ")", 1, 1, 0, 1, 1, 1);
