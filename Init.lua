@@ -14,13 +14,13 @@ local frame = CreateFrame("Frame");
 local mouseFrame = CreateFrame("Frame", "MouseFrame", UIParent);
 local isAddonLoaded = IsAddOnLoaded("Curator");
 local deletedItemCount = 0;
+local itemProfit = 0;
 local addItem = true;
 local doNotDisplayItemInfo = false;
 local itemExists = false;
 local itemHasNoSellPrice = false;
 local tooltipLink;
 local repairCost;
-local itemProfit = 0;
 local sellIndices = {};
 
 -- Bindings
@@ -60,28 +60,39 @@ end
 -- Module Init
 local scanner = CreateFrame("GameTooltip", "CuratorScanner", UIParent, "GameTooltipTemplate"); scanner:SetOwner(UIParent,"ANCHOR_NONE");
 
-local function CalculateProfit(item, itemCount)
+local function DoesItemHaveSellPrice(itemLink)
+	local sellPrice = select(11, GetItemInfo(itemLink));
+	if sellPrice > 0 then return true else return false end;
+end
+
+local function CalculateProfit(item)
 	if item then
-		local sellPrice = itemCount * select(11, GetItemInfo(item));
+		local itemCount = GetItemCount(item, false); local sellPrice = itemCount * select(11, GetItemInfo(item));
+		
+		print(item .. "x" .. itemCount .. " " .. GetCoinTextureString(sellPrice));
 		
 		return sellPrice;
 	end
 end
 
-local function SellItems(tbl, totalProfit)
+local function SellItems(tbl)
+	local i = 1;
 	if (next(tbl) ~= nil) then
 		for itemID, itemInfo in pairs(tbl) do
-			for key, value in pairs(itemInfo) do
+			while i <= 12 do
 				if tbl[itemID]["hasSellPrice"] then
+					itemProfit = itemProfit + CalculateProfit(tbl[itemID]["itemLink"]);
 					UseContainerItem(tbl[itemID]["bag"], tbl[itemID]["slot"]);
 				else
 					PickupContainerItem(tbl[itemID]["bag"], tbl[itemID]["slot"]);
 					DeleteCursorItem();
 					deletedItemCount = deletedItemCount + 1;
 				end
+				tbl[itemID] = nil;
+				i = i + 1; break;
 			end
 		end
-		print(L["ADDON_NAME"] .. L["SOLD_ITEMS"] .. GetCoinTextureString(totalProfit, 12));
+		print(L["ADDON_NAME"] .. L["SOLD_ITEMS"] .. GetCoinTextureString(itemProfit, 12));
 	else
 		print(L["ADDON_NAME"] .. L["NO_ITEMS"]);
 	end
@@ -90,6 +101,8 @@ local function SellItems(tbl, totalProfit)
 		print(L["ADDON_NAME"] .. L["DELETED_ITEM"] .. deletedItemCount .. L["DELETED_ITEM_TEXT"]);
 		deletedItemCount = 0;
 	end
+	
+	itemProfit = 0;
 end
 
 local function ScanInventory()
@@ -101,9 +114,8 @@ local function ScanInventory()
 			if itemID then -- This accounts for empty slots and items without an ID.
 				if itemCount then
 					if (quality < 1) then -- This is a poor quality item.
-						if (CalculateProfit(itemLink, itemCount) > 0) then
-							itemProfit = itemProfit + CalculateProfit(itemLink, itemCount);
-							sellIndices[itemID] = {bag = i, slot = j, hasSellPrice = true};
+						if DoesItemHaveSellPrice(itemLink) then
+							sellIndices[itemID] = {bag = i, slot = j, hasSellPrice = true, itemLink = itemLink};
 						else
 							sellIndices[itemID] = {bag = i, slot = j, hasSellPrice = false};
 						end
@@ -113,8 +125,7 @@ local function ScanInventory()
 								sellIndices[itemID] = {bag = i, slot = j, hasSellPrice = false};
 							else
 								local itemString = string.match(select(3, strfind(itemLink, "|H(.+)|h")), "(.*)%[");
-								itemProfit = itemProfit + CalculateProfit(itemLink, itemCount);
-								sellIndices[itemID] = {bag = i, slot = j, hasSellPrice = true};
+								sellIndices[itemID] = {bag = i, slot = j, hasSellPrice = true, itemLink = itemLink};
 							end
 						end
 					end
@@ -122,7 +133,7 @@ local function ScanInventory()
 			end
 		end
 	end
-	SellItems(sellIndices, itemProfit);
+	SellItems(sellIndices);
 end
 
 local function Report(func, ret, val)
@@ -224,13 +235,12 @@ end
 local function DisplayItemInfo(tooltip)
 	if (CuratorSettings["disableDisplayInfo"] == false) then
 		local _, itemLink = tooltip:GetItem();
-		local itemID, maxStackCount;
 		
 		if (itemLink) then
-			itemID = (GetItemInfoInstant(itemLink));
+			local itemID = (GetItemInfoInstant(itemLink));
+			local _, _, _, _, _, _, _, maxStackCount = GetItemInfo(itemLink);
 			
 			if itemID then
-					maxStackCount = select(8, GetItemInfo(itemID));
 					tooltip:AddDoubleLine("Item ID\n" .. "Stack\n" .. "Count", itemID .. "\n" .. maxStackCount .. "\n" .. 
 					GetItemCount(itemID, true) .. " (" .. GetItemCount(itemID, true) .. ")", 1, 1, 0, 1, 1, 1);
 					tooltip:Show();
