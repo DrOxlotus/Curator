@@ -8,7 +8,6 @@
 -- Addon Variables
 local curator, curatorNS = ...;
 local L = curatorNS.L;
-curatorNS.totalProfit = 0;
 
 -- Module Variables
 local frame = CreateFrame("Frame");
@@ -21,7 +20,7 @@ local itemExists = false;
 local itemHasNoSellPrice = false;
 local tooltipLink;
 local repairCost;
-local sellPrice = 0;
+local itemProfit = 0;
 local sellIndices = {};
 
 -- Bindings
@@ -62,29 +61,27 @@ end
 local scanner = CreateFrame("GameTooltip", "CuratorScanner", UIParent, "GameTooltipTemplate"); scanner:SetOwner(UIParent,"ANCHOR_NONE");
 
 local function CalculateProfit(item, itemCount)
-	if (item) then
-		local itemProfit = (itemCount * select(11, GetItemInfo(item)));
-		return itemProfit or 0;
+	if item then
+		local sellPrice = itemCount * select(11, GetItemInfo(item));
+		
+		return sellPrice;
 	end
 end
 
-local function SellItems(tbl)
+local function SellItems(tbl, totalProfit)
 	if (next(tbl) ~= nil) then
 		for itemID, itemInfo in pairs(tbl) do
 			for key, value in pairs(itemInfo) do
-				if (key == "sellPrice") then
-					if (value > 0) then
-						curatorNS.totalProfit = curatorNS.totalProfit + tbl[itemID]["sellPrice"];
-						UseContainerItem(tbl[itemID]["bag"], tbl[itemID]["slot"]);
-					else
-						PickupContainerItem(tbl[itemID]["bag"], tbl[itemID]["slot"]);
-						DeleteCursorItem();
-						deletedItemCount = deletedItemCount + 1;
-					end
+				if tbl[itemID]["hasSellPrice"] then
+					UseContainerItem(tbl[itemID]["bag"], tbl[itemID]["slot"]);
+				else
+					PickupContainerItem(tbl[itemID]["bag"], tbl[itemID]["slot"]);
+					DeleteCursorItem();
+					deletedItemCount = deletedItemCount + 1;
 				end
 			end
 		end
-		print(L["ADDON_NAME"] .. L["SOLD_ITEMS"] .. GetCoinTextureString(curatorNS.totalProfit, 12));
+		print(L["ADDON_NAME"] .. L["SOLD_ITEMS"] .. GetCoinTextureString(totalProfit, 12));
 	else
 		print(L["ADDON_NAME"] .. L["NO_ITEMS"]);
 	end
@@ -93,32 +90,31 @@ local function SellItems(tbl)
 		print(L["ADDON_NAME"] .. L["DELETED_ITEM"] .. deletedItemCount .. L["DELETED_ITEM_TEXT"]);
 		deletedItemCount = 0;
 	end
-	
-	curatorNS.totalProfit = 0;
 end
 
 local function ScanInventory()
+	local itemProfit = 0;
 	for i = 0, (NUM_BAG_FRAMES + 1) do -- The constant is equal to 4.
 		for j = 1, GetContainerNumSlots(i) do
 			local _, itemCount, _, quality, _, _, itemLink, _, _, itemID = GetContainerItemInfo(i, j);
 			
 			if itemID then -- This accounts for empty slots and items without an ID.
-				if (itemCount) then
+				if itemCount then
 					if (quality < 1) then -- This is a poor quality item.
-						if (CalculateProfit(itemID, itemCount) > 0) then
-							sellPrice = CalculateProfit(itemID, itemCount);
-							sellIndices[itemID] = {bag = i, slot = j, sellPrice = sellPrice};
+						if (CalculateProfit(itemLink, itemCount) > 0) then
+							itemProfit = itemProfit + CalculateProfit(itemLink, itemCount);
+							sellIndices[itemID] = {bag = i, slot = j, hasSellPrice = true};
 						else
-							sellIndices[itemID] = {bag = i, slot = j, sellPrice = 0};
+							sellIndices[itemID] = {bag = i, slot = j, hasSellPrice = false};
 						end
 					else
 						if (Contains(itemID)) then -- This is an item that the player added to the database.
-							if (itemHasNoSellPrice) then
-								sellIndices[itemID] = {bag = i, slot = j, sellPrice = 0};
+							if itemHasNoSellPrice then
+								sellIndices[itemID] = {bag = i, slot = j, hasSellPrice = false};
 							else
 								local itemString = string.match(select(3, strfind(itemLink, "|H(.+)|h")), "(.*)%[");
-								sellPrice = CalculateProfit(itemString, itemCount);
-								sellIndices[itemID] = {bag = i, slot = j, sellPrice = sellPrice};
+								itemProfit = itemProfit + CalculateProfit(itemLink, itemCount);
+								sellIndices[itemID] = {bag = i, slot = j, hasSellPrice = true};
 							end
 						end
 					end
@@ -126,7 +122,7 @@ local function ScanInventory()
 			end
 		end
 	end
-	SellItems(sellIndices);
+	SellItems(sellIndices, itemProfit);
 end
 
 local function Report(func, ret, val)
@@ -228,13 +224,17 @@ end
 local function DisplayItemInfo(tooltip)
 	if (CuratorSettings["disableDisplayInfo"] == false) then
 		local _, itemLink = tooltip:GetItem();
-		local itemID;
+		local itemID, maxStackCount;
 		
 		if (itemLink) then
 			itemID = (GetItemInfoInstant(itemLink));
 			
-			if (itemID) then
-				if (CuratorItemInfo[itemID]) then -- Update Item Info
+			if itemID then
+					maxStackCount = select(8, GetItemInfo(itemID));
+					tooltip:AddDoubleLine("Item ID\n" .. "Stack\n" .. "Count", itemID .. "\n" .. maxStackCount .. "\n" .. 
+					GetItemCount(itemID, true) .. " (" .. GetItemCount(itemID, true) .. ")", 1, 1, 0, 1, 1, 1);
+					tooltip:Show();
+				--[[if (CuratorItemInfo[itemID]) then -- Update Item Info
 					CuratorItemInfo[itemID]["count"] = CuratorItemInfo[itemID]["count"] + GetItemCount(itemID, true);
 					CuratorItemInfoPerCharacter[itemID]["count"] = GetItemCount(itemID, true);
 					
@@ -248,7 +248,7 @@ local function DisplayItemInfo(tooltip)
 					tooltip:AddDoubleLine("Item ID\n" .. "Stack\n" .. "Count", itemID .. "\n" .. CuratorItemInfo[itemID]["maxStackCount"] .. "\n" .. 
 					CuratorItemInfoPerCharacter[itemID]["count"] .. " (" .. CuratorItemInfo[itemID]["count"] .. ")", 1, 1, 0, 1, 1, 1);
 					tooltip:Show();
-				end
+				end]]--
 			end
 		end
 	end
@@ -367,7 +367,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
 		ScanInventory();
 	end
 	
-	if event == "MERCHANT_CLOSED" then
+	--[[if event == "MERCHANT_CLOSED" then
 		if (curatorNS.totalProfit > 0) then -- The player sold some items.
 			if (repairCost > curatorNS.totalProfit) then -- The player didn't sell enough (or enough pricey items).
 				print(L["ADDON_NAME"] .. L["NET_LOSS_TEXT"] .. GetCoinTextureString((repairCost - curatorNS.totalProfit), 12)); 
@@ -381,7 +381,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
 			print(L["ADDON_NAME"] .. L["REPAIRED_ITEMS"] .. GetCoinTextureString(repairCost, 12));
 		end
 		repairCost = 0;
-	end
+	end]]--
 end);
 
 local function DoesItemExist(tooltip)
