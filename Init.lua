@@ -79,7 +79,7 @@ local function SellItems(tbl)
 	local i = 1;
 	if (next(tbl) ~= nil) then
 		for itemID, itemInfo in pairs(tbl) do
-			while i <= 12 do
+			while i <= 8 do
 				if tbl[itemID]["hasSellPrice"] then
 					itemProfit = itemProfit + CalculateProfit(tbl[itemID]["itemLink"]);
 					UseContainerItem(tbl[itemID]["bag"], tbl[itemID]["slot"]);
@@ -106,7 +106,6 @@ local function SellItems(tbl)
 end
 
 local function ScanInventory()
-	local itemProfit = 0;
 	for i = 0, (NUM_BAG_FRAMES + 1) do -- The constant is equal to 4.
 		for j = 1, GetContainerNumSlots(i) do
 			local _, itemCount, _, quality, _, _, itemLink, _, _, itemID = GetContainerItemInfo(i, j);
