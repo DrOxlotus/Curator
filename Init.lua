@@ -22,6 +22,9 @@ local itemHasNoSellPrice = false;
 local tooltipLink;
 local repairCost;
 local sellIndices = {};
+local characterName = GetUnitName("player", false) .. "-" .. GetRealmName();
+local accountItemTotal = 0; -- How many of an item is available across the entire account?
+local iter = 0; -- Where should I start iterating from?
 
 -- Bindings
 BINDING_HEADER_CURATOR = string.upper(L["ADDON_NAME"]);
@@ -230,6 +233,11 @@ local function Add(arg, tbl)
 	end
 end
 
+local function ClearIterations()
+	iter = 0;
+	accountItemTotal = 0;
+end
+
 local function DisplayItemInfo(tooltip)
 	if (CuratorSettings["disableDisplayInfo"] == false) then
 		local _, itemLink = tooltip:GetItem();
@@ -239,24 +247,33 @@ local function DisplayItemInfo(tooltip)
 			local _, _, _, _, _, _, _, maxStackCount = GetItemInfo(itemLink);
 			
 			if itemID then
-					tooltip:AddDoubleLine("Item ID\n" .. "Stack\n" .. "Count", itemID .. "\n" .. maxStackCount .. "\n" .. 
-					GetItemCount(itemID, true) .. " (" .. GetItemCount(itemID, true) .. ")", 1, 1, 0, 1, 1, 1);
-					tooltip:Show();
-				--[[if (CuratorItemInfo[itemID]) then -- Update Item Info
-					CuratorItemInfo[itemID]["count"] = CuratorItemInfo[itemID]["count"] + GetItemCount(itemID, true);
-					CuratorItemInfoPerCharacter[itemID]["count"] = GetItemCount(itemID, true);
+				if CuratorItemInfo[itemID] then -- The item is in the account table.
+					if maxStackCount ~= CuratorItemInfo[itemID]["maxStackCount"] then -- Did the max stack count possibly change?
+						CuratorItemInfo[itemID]["maxStackCount"] = maxStackCount;
+					end
 					
-					tooltip:AddDoubleLine("Item ID\n" .. "Stack\n" .. "Count", itemID .. "\n" .. CuratorItemInfo[itemID]["maxStackCount"] .. "\n" .. 
-					CuratorItemInfoPerCharacter[itemID]["count"] .. " (" .. CuratorItemInfo[itemID]["count"] .. ")", 1, 1, 0, 1, 1, 1);
-					tooltip:Show();
-				else -- Add Item Info
-					CuratorItemInfo[itemID] = {maxStackCount = select(8, GetItemInfo(itemID)), count = GetItemCount(itemID, true)};
-					CuratorItemInfoPerCharacter[itemID] = {count = GetItemCount(itemID, true)};
-					
-					tooltip:AddDoubleLine("Item ID\n" .. "Stack\n" .. "Count", itemID .. "\n" .. CuratorItemInfo[itemID]["maxStackCount"] .. "\n" .. 
-					CuratorItemInfoPerCharacter[itemID]["count"] .. " (" .. CuratorItemInfo[itemID]["count"] .. ")", 1, 1, 0, 1, 1, 1);
-					tooltip:Show();
-				end]]--
+					if GetItemCount(itemID, true) ~= CuratorItemInfo[itemID]["itemCount"][characterName] then -- Did the player receive more of said item?
+						CuratorItemInfo[itemID]["itemCount"][characterName] = GetItemCount(itemID, true);
+					end
+				else -- The item is missing from the account table.
+					CuratorItemInfo[itemID] = {maxStackCount = maxStackCount, itemCount = {[characterName] = GetItemCount(itemID, true)}}
+				end
+				
+				local stop = 0;
+				for _ in pairs(CuratorItemInfo[itemID]["itemCount"]) do
+					stop = stop + 1;
+				end
+				
+				for _, count in pairs(CuratorItemInfo[itemID]["itemCount"]) do
+					if iter < stop then
+						accountItemTotal = accountItemTotal + count;
+						iter = iter + 1;
+					end
+				end
+				
+				tooltip:AddDoubleLine("Item ID\n" .. "Stack\n" .. "Count", itemID .. "\n" .. CuratorItemInfo[itemID]["maxStackCount"] .. "\n" .. 
+				CuratorItemInfo[itemID]["itemCount"][characterName] .. " (" .. accountItemTotal .. ")", 1, 1, 0, 1, 1, 1);
+				tooltip:Show();
 			end
 		end
 	end
@@ -404,6 +421,7 @@ local function DoesItemExist(tooltip)
 end
 
 GameTooltip:HookScript("OnTooltipSetItem", DoesItemExist);
+GameTooltip:SetScript("OnHide", ClearIterations);
 mouseFrame:SetScript("OnKeyDown", HandleKeyPress);
 mouseFrame:SetPropagateKeyboardInput(true);
 

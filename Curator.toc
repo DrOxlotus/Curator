@@ -5,7 +5,7 @@
 ## Notes: A per-character and account-wide inventory management system.
 ## Author: Oxlotus - Area 52 (US)
 ## SavedVariables: CuratorSellList, CuratorItemInfo, CuratorSettings
-## SavedVariablesPerCharacter: CuratorSellListPerCharacter, CuratorItemInfoPerCharacter
+## SavedVariablesPerCharacter: CuratorSellListPerCharacter
 
 Locales\Locales.lua
 Init.lua
