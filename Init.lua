@@ -69,8 +69,6 @@ local function CalculateProfit(item)
 	if item then
 		local itemCount = GetItemCount(item, false); local sellPrice = itemCount * select(11, GetItemInfo(item));
 		
-		print(item .. "x" .. itemCount .. " " .. GetCoinTextureString(sellPrice));
-		
 		return sellPrice;
 	end
 end
@@ -81,6 +79,7 @@ local function SellItems(tbl)
 		for itemID, itemInfo in pairs(tbl) do
 			while i <= 8 do
 				if tbl[itemID]["hasSellPrice"] then
+					local itemCount = GetItemCount(tbl[itemID]["itemLink"], false); local sellPrice = itemCount * select(11, GetItemInfo(tbl[itemID]["itemLink"]));
 					itemProfit = itemProfit + CalculateProfit(tbl[itemID]["itemLink"]);
 					UseContainerItem(tbl[itemID]["bag"], tbl[itemID]["slot"]);
 				else
@@ -375,22 +374,6 @@ frame:SetScript("OnEvent", function(self, event, ...)
 		end
 		ScanInventory();
 	end
-	
-	--[[if event == "MERCHANT_CLOSED" then
-		if (curatorNS.totalProfit > 0) then -- The player sold some items.
-			if (repairCost > curatorNS.totalProfit) then -- The player didn't sell enough (or enough pricey items).
-				print(L["ADDON_NAME"] .. L["NET_LOSS_TEXT"] .. GetCoinTextureString((repairCost - curatorNS.totalProfit), 12)); 
-				print(L["ADDON_NAME"] .. L["REPAIR_COST_TEXT"] .. GetCoinTextureString(repairCost, 8));
-				print(L["ADDON_NAME"] .. L["PROFIT_TEXT"] .. GetCoinTextureString(curatorNS.totalProfit, 8));
-			else -- The profit is higher than the cost of repairs.
-				print(L["ADDON_NAME"] .. L["SOLD_ITEMS"] .. GetCoinTextureString((curatorNS.totalProfit - repairCost), 12) .. 
-				" (-" .. GetCoinTextureString(repairCost, 8) .. ")");
-			end
-		elseif repairCost > 0 then -- The player repaired, but sold nothing.
-			print(L["ADDON_NAME"] .. L["REPAIRED_ITEMS"] .. GetCoinTextureString(repairCost, 12));
-		end
-		repairCost = 0;
-	end]]--
 end);
 
 local function DoesItemExist(tooltip)
