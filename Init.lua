@@ -94,7 +94,6 @@ local function SellItems(tbl)
 				i = i + 1; break;
 			end
 		end
-		print(L["ADDON_NAME"] .. L["SOLD_ITEMS"] .. GetCoinTextureString(itemProfit, 12));
 	else
 		print(L["ADDON_NAME"] .. L["NO_ITEMS"]);
 	end
@@ -104,7 +103,12 @@ local function SellItems(tbl)
 		deletedItemCount = 0;
 	end
 	
-	itemProfit = 0;
+	if next(tbl) ~= nil then
+		SellItems(tbl);
+	else
+		print(L["ADDON_NAME"] .. L["SOLD_ITEMS"] .. GetCoinTextureString(itemProfit, 12));
+		itemProfit = 0;
+	end
 end
 
 local function ScanInventory()
