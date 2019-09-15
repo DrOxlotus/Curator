@@ -1,6 +1,6 @@
 ## Interface: 80200
 ## X-Curse-Project-ID: 324542
-## Version: 1.6.0
+## Version: 1.6.1
 ## Title: Curator
 ## Notes: A per-character and account-wide inventory management system.
 ## Author: Oxlotus - Area 52 (US)
