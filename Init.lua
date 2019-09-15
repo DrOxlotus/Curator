@@ -285,6 +285,33 @@ local function DisplayItemInfo(tooltip)
 	end
 end
 
+local function Repair()
+	local money = GetMoney();
+	local canMerchantRepair = CanMerchantRepair();
+	local canPlayerGuildBankRepair = CanGuildBankRepair();
+	local canPlayerWithdrawGuildBankMoney = CanWithdrawGuildBankMoney();
+	
+	if canMerchantRepair then -- The current merchant can repair items.
+		if canPlayerGuildBankRepair -- The player can use guild repairs.
+			if canPlayerWithdrawGuildBankMoney then -- The player still has funds through guild bank money.
+				RepairAllItems(1); -- Use guild bank money to fund the repair.
+			else
+				if money > (repairCost + 100) then -- The player has at least one silver more than the repair cost.
+					RepairAllItems(); -- Use player money to fund the repairs.
+				else
+					print(L["ADDON_NAME"] .. L["LOW_FUNDS"] .. "(" .. GetCoinTextureString(repairCost, 12) .. ")");
+				end
+			end
+		else
+			if money > (repairCost + 100) then -- The player has at least one silver more than the repair cost.
+				RepairAllItems(); -- Use player money to fund the repairs.
+			else
+				print(L["ADDON_NAME"] .. L["LOW_FUNDS"] .. "(" .. GetCoinTextureString(repairCost, 12) .. ")");
+			end
+		end
+	end
+end
+
 local function GetItemLinkFromTooltip(tooltip)
 	local itemName, itemLink = tooltip:GetItem();
 	
@@ -351,11 +378,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
 			CuratorItemInfo = {};
 		end
 		
-		if (CuratorItemInfoPerCharacter == nil) then
-			CuratorItemInfoPerCharacter = {};
-		end
-		
-		for i, j in ipairs(CuratorSellList) do
+		for i, j in ipairs(CuratorSellList) do -- If an item is in both lists, then remove it from the individual character list.
 			for k, v in ipairs(CuratorSellListPerCharacter) do
 				if v == j then
 					table.remove(CuratorSellListPerCharacter, k);
@@ -367,33 +390,9 @@ frame:SetScript("OnEvent", function(self, event, ...)
 	end
 
 	if event == "MERCHANT_SHOW" then
-		local playerMoney = GetMoney();
-		local canRepair = CanMerchantRepair();
-		local canGuildBankRepair = CanGuildBankRepair();
-		local canWithdrawGuildBankMoney = CanWithdrawGuildBankMoney();
 		repairCost = GetRepairAllCost();
-		if canRepair then -- The current merchant has the repair option.
-			if canGuildBankRepair then -- The player can use guild repairs.
-				if canWithdrawGuildBankMoney then
-					if repairCost > 0 then -- The player has items that need repaired.
-						RepairAllItems(1); -- Uses guild bank money to fund the repairs.
-					end
-				else
-					if playerMoney > repairCost then
-						if repairCost > 0 then
-							RepairAllItems();
-						end
-					end
-				end
-			else
-				if repairCost > 0 then -- The player has items that need repaired.
-					if playerMoney > repairCost then -- The player has enough money to fund the repair.
-						RepairAllItems();
-					else
-						print(L["ADDON_NAME"] .. L["LOW_FUNDS"]);
-					end
-				end
-			end
+		if repairCost > 0 then -- The player has items that need repaired.
+			Repair();
 		end
 		ScanInventory();
 	end

@@ -25,7 +25,7 @@ if LOCALE == "enUS" or LOCALE == "enGB" then -- EU/US English
 	L["DELETED_ITEM"] = "Deleted ";
 	-- ERRORS
 	L["CANNOT_ADD_ITEM"] = " already exists in your account list!";
-	L["LOW_FUNDS"] = "Unable to repair. Lack of funds!";
+	L["LOW_FUNDS"] = "Funds not available for repair.";
 	L["NO_COMMANDS"] = "No available commands! Commands were deprecated in release 1.2.0.";
 	L["NO_ITEMS"] = "There are no items to sell or delete.";
 	-- INFO
@@ -53,7 +53,7 @@ if LOCALE == "frFR" then -- French
 	L["DELETED_ITEM"] = "Supprimé ";
 	-- ERRORS
 	L["CANNOT_ADD_ITEM"] = " existe déjà dans votre liste de compte!";
-	L["LOW_FUNDS"] = "Impossible de réparer. Manque de fonds!";
+	L["LOW_FUNDS"] = "Fonds non disponibles pour réparation.";
 	L["NO_COMMANDS"] = "Aucune commande disponible! Les commandes étaient obsolètes dans la version 1.2.0.";
 	L["NO_ITEMS"] = "Il n'y a aucun article à vendre ou supprimer.";
 	-- INFO
@@ -81,7 +81,7 @@ if LOCALE == "deDE" then -- German
 	L["DELETED_ITEM"] = "Gelöscht ";
 	-- ERRORS
 	L["CANNOT_ADD_ITEM"] = " ist bereits in Ihrer Kontoliste vorhanden!";
-	L["LOW_FUNDS"] = "Reparatur nicht möglich. Geldmangel!";
+	L["LOW_FUNDS"] = "Mittel nicht verfügbar für die Reparatur.";
 	L["NO_COMMANDS"] = "Keine verfügbaren Befehle! Befehle wurden in Version 1.2.0 verworfen.";
 	L["NO_ITEMS"] = "Es gibt keine Artikel zu verkaufen oder zu löschen.";
 	-- INFO
@@ -109,7 +109,7 @@ if LOCALE == "ruRU" then -- Russian
 	L["DELETED_ITEM"] = "Удалить ";
 	-- ERRORS
 	L["CANNOT_ADD_ITEM"] = " уже существует на вашем аккаунте!";
-	L["LOW_FUNDS"] = "Невозможно починить. Недостаток средств!";
+	L["LOW_FUNDS"] = "Средства не доступны для ремонта.";
 	L["NO_COMMANDS"] = "Нет доступных команд! Команды устарели в версии 1.2.0.";
 	L["NO_ITEMS"] = "Там нет элементов, чтобы продать или удалить.";
 	-- INFO
