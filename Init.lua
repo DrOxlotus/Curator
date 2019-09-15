@@ -106,7 +106,7 @@ local function SellItems(tbl)
 	if next(tbl) ~= nil then
 		SellItems(tbl);
 	else
-		if itemProft > 0 then
+		if itemProfit > 0 then
 			print(L["ADDON_NAME"] .. L["SOLD_ITEMS"] .. GetCoinTextureString(itemProfit, 12));
 		end
 		itemProfit = 0;
