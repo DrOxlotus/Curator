@@ -292,7 +292,7 @@ local function Repair()
 	local canPlayerWithdrawGuildBankMoney = CanWithdrawGuildBankMoney();
 	
 	if canMerchantRepair then -- The current merchant can repair items.
-		if canPlayerGuildBankRepair -- The player can use guild repairs.
+		if canPlayerGuildBankRepair then -- The player can use guild repairs.
 			if canPlayerWithdrawGuildBankMoney then -- The player still has funds through guild bank money.
 				RepairAllItems(1); -- Use guild bank money to fund the repair.
 			else
