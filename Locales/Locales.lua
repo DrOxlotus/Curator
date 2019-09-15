@@ -53,8 +53,9 @@ if LOCALE == "frFR" then -- French
 	L["DELETED_ITEM"] = "Supprimé ";
 	-- ERRORS
 	L["CANNOT_ADD_ITEM"] = " existe déjà dans votre liste de compte!";
-	L["NO_COMMANDS"] = "Aucune commande disponible! Les commandes étaient obsolètes dans la version 1.2.0.";
 	L["LOW_FUNDS"] = "Impossible de réparer. Manque de fonds!";
+	L["NO_COMMANDS"] = "Aucune commande disponible! Les commandes étaient obsolètes dans la version 1.2.0.";
+	L["NO_ITEMS"] = "Il n'y a aucun article à vendre ou supprimer.";
 	-- INFO
 	L["SOLD_ITEMS"] = "Vendu tous les articles avec un gain net de ";
 	L["REPAIRED_ITEMS"] = "Réparé tous les articles pour ";
@@ -69,6 +70,7 @@ if LOCALE == "frFR" then -- French
 	L["BINDING_CURATOR_ACCOUNT_LIST"] = "Compte Liste";
 	L["BINDING_CURATOR_CHARACTER_LIST"] = "Personnage Liste";
 	L["BINDING_CURATOR_CHEAPEST_ITEM"] = "Identifier l'article le moins cher";
+	L["BINDING_CURATOR_DISPLAY_INFO"] = "Désactiver L'Élément Info";
 return end;
 
 if LOCALE == "deDE" then -- German
@@ -79,8 +81,9 @@ if LOCALE == "deDE" then -- German
 	L["DELETED_ITEM"] = "Gelöscht ";
 	-- ERRORS
 	L["CANNOT_ADD_ITEM"] = " ist bereits in Ihrer Kontoliste vorhanden!";
-	L["NO_COMMANDS"] = "Keine verfügbaren Befehle! Befehle wurden in Version 1.2.0 verworfen.";
 	L["LOW_FUNDS"] = "Reparatur nicht möglich. Geldmangel!";
+	L["NO_COMMANDS"] = "Keine verfügbaren Befehle! Befehle wurden in Version 1.2.0 verworfen.";
+	L["NO_ITEMS"] = "Es gibt keine Artikel zu verkaufen oder zu löschen.";
 	-- INFO
 	L["SOLD_ITEMS"] = "Verkauft alle Artikel mit einem Nettogewinn von ";
 	L["REPAIRED_ITEMS"] = "Reparierte alle Einzelteile für ";
@@ -95,6 +98,7 @@ if LOCALE == "deDE" then -- German
 	L["BINDING_CURATOR_ACCOUNT_LIST"] = "Konto Liste";
 	L["BINDING_CURATOR_CHARACTER_LIST"] = "Charakter Liste";
 	L["BINDING_CURATOR_CHEAPEST_ITEM"] = "Identifizieren Sie den günstigsten Artikel";
+	L["BINDING_CURATOR_DISPLAY_INFO"] = "Artikel-Info Deaktivieren";
 return end;
 
 if LOCALE == "ruRU" then -- Russian
@@ -105,8 +109,9 @@ if LOCALE == "ruRU" then -- Russian
 	L["DELETED_ITEM"] = "Удалить ";
 	-- ERRORS
 	L["CANNOT_ADD_ITEM"] = " уже существует на вашем аккаунте!";
-	L["NO_COMMANDS"] = "Нет доступных команд! Команды устарели в версии 1.2.0.";
 	L["LOW_FUNDS"] = "Невозможно починить. Недостаток средств!";
+	L["NO_COMMANDS"] = "Нет доступных команд! Команды устарели в версии 1.2.0.";
+	L["NO_ITEMS"] = "Там нет элементов, чтобы продать или удалить.";
 	-- INFO
 	L["SOLD_ITEMS"] = "Проданы все предметы с чистой прибылью ";
 	L["REPAIRED_ITEMS"] = "Отремонтировал все предметы для ";
@@ -123,4 +128,5 @@ if LOCALE == "ruRU" then -- Russian
 	L["BINDING_CURATORCLASSIC_ACCOUNT_LIST"] = "Список аккаунтов";
 	L["BINDING_CURATORCLASSIC_CHARACTER_LIST"] = "Список персонажей";
 	L["BINDING_CURATORCLASSIC_CHEAPEST_ITEM"] = "Определить самый дешевый товар";
+	L["BINDING_CURATOR_DISPLAY_INFO"] = "Отображение Информации Об Элементе";
 return end;
