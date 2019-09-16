@@ -365,7 +365,13 @@ SlashCmdList["curator"] = function(cmd, editbox)
 			args = tonumber(args);
 			if CuratorItemInfo[args] then -- The item is in the table.
 				local totalQuantity = 0;
-				print(L["ADDON_NAME"] .. L["LOOKUP_INFO_HEADER"] .. CuratorItemInfo[args]["itemLink"]);
+				
+				if CuratorItemInfo[args]["itemLink"] then
+					print(L["ADDON_NAME"] .. L["LOOKUP_INFO_HEADER"] .. CuratorItemInfo[args]["itemLink"]);
+				else
+					print(L["ADDON_NAME"]);
+				end
+				
 				for k, v in pairs(CuratorItemInfo[args]["itemCount"]) do
 					print(k .. ": " .. v);
 					totalQuantity = totalQuantity + v;
