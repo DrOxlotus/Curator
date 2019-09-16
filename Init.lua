@@ -261,8 +261,12 @@ local function DisplayItemInfo(tooltip)
 					if GetItemCount(itemID, true) ~= CuratorItemInfo[itemID]["itemCount"][characterName] then -- Did the player receive more of said item?
 						CuratorItemInfo[itemID]["itemCount"][characterName] = GetItemCount(itemID, true);
 					end
+					
+					if not CuratorItemInfo[itemID]["itemLink"] then
+						CuratorItemInfo[itemID]["itemLink"] = itemLink;
+					end
 				else -- The item is missing from the account table.
-					CuratorItemInfo[itemID] = {maxStackCount = maxStackCount, itemCount = {[characterName] = GetItemCount(itemID, true)}}
+					CuratorItemInfo[itemID] = {maxStackCount = maxStackCount, itemCount = {[characterName] = GetItemCount(itemID, true)}, itemLink = itemLink}
 				end
 				
 				local stop = 0;
@@ -361,6 +365,7 @@ SlashCmdList["curator"] = function(cmd, editbox)
 			args = tonumber(args);
 			if CuratorItemInfo[args] then -- The item is in the table.
 				local totalQuantity = 0;
+				print(L["ADDON_NAME"] .. L["LOOKUP_INFO_HEADER"] .. CuratorItemInfo[args]["itemLink"]);
 				for k, v in pairs(CuratorItemInfo[args]["itemCount"]) do
 					print(k .. ": " .. v);
 					totalQuantity = totalQuantity + v;
