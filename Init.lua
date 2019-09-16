@@ -424,13 +424,13 @@ frame:SetScript("OnEvent", function(self, event, ...)
 		for k, v in pairs(CuratorItemInfo) do
 			for i, j in pairs(CuratorItemInfo[k]) do
 				if type(j) == "table" then
-					if next(j) == nil then -- If the item count table is empty, then simply remove the item from the database.
-						CuratorItemInfo[k] = nil;
-					end
 					for m, n in pairs(CuratorItemInfo[k][i]) do
 						if n == 0 then
 							CuratorItemInfo[k][i][m] = nil;
 						end
+					end
+					if next(j) == nil then -- If the item count table is empty, then simply remove the item from the database.
+						CuratorItemInfo[k] = nil;
 					end
 				end
 			end
