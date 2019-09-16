@@ -5,10 +5,10 @@
 	<Binding name="CURATOR_CHARACTER_LIST" category="ADDONS">
 		CuratorHandleKeyPress(GetBindingKey("CURATOR_CHARACTER_LIST"));
 	</Binding>
-	<Binding name="CURATOR_CHEAPEST_ITEM" category="ADDONS">
-		CuratorHandleKeyPress(GetBindingKey("CURATOR_CHEAPEST_ITEM"));
-	</Binding>
 	<Binding name="CURATOR_DISABLE_DISPLAY_INFO" category="ADDONS">
 		CuratorHandleKeyPress(GetBindingKey("CURATOR_DISABLE_DISPLAY_INFO"));
+	</Binding>
+	<Binding name="CURATOR_CHEAPEST_ITEM" category="ADDONS">
+		CuratorHandleKeyPress(GetBindingKey("CURATOR_CHEAPEST_ITEM"));
 	</Binding>
 </Bindings>

@@ -18,6 +18,13 @@ curatorNS.L = L;
 local LOCALE = GetLocale();
 
 if LOCALE == "enUS" or LOCALE == "enGB" then -- EU/US English
+	-- COMMANDS
+	L["CMD_LOOKUP"] = "lookup";
+	L["CMD_REMOVE"] = "remove";
+	-- COMMANDS INFO
+	L["LOOKUP_INFO"] = "Input must be a number.";
+	L["REMOVE_INFO"] = "Character not found. You may want to format the search like Character-Realm.";
+	L["REMOVE_OUTPUT"] = " removed from the database.";
 	-- GENERAL
 	L["ADDON_NAME"] = "|cff00ccff" .. curator .. "|r: ";
 	L["ADDED_ITEM"] = "Added ";

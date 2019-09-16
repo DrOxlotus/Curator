@@ -356,6 +356,40 @@ SlashCmdList["curator"] = function(cmd, editbox)
 	
 	if not cmd or cmd == "" then
 		print(L["ADDON_NAME"] .. L["NO_COMMANDS"]);
+	elseif cmd == L["CMD_LOOKUP"] and args ~= "" then
+		if tonumber(args) then -- The argument is a number.
+			args = tonumber(args);
+			if CuratorItemInfo[args] then -- The item is in the table.
+				local totalQuantity = 0;
+				for k, v in pairs(CuratorItemInfo[args]["itemCount"]) do
+					print(k .. ": " .. v);
+					totalQuantity = totalQuantity + v;
+				end
+				print("Total: " .. totalQuantity .. " " .. "|T" .. select(5, GetItemInfoInstant(args)) .. ":0|t");
+				totalQuantity = 0;
+			end
+		else
+			print(L["ADDON_NAME"] .. L["LOOKUP_INFO"]);
+		end
+	elseif cmd == L["CMD_REMOVE"] and args ~= "" then
+		local charactersRemoved = 0;
+		for k, v in pairs(CuratorItemInfo) do
+			for i, j in pairs(CuratorItemInfo[k]) do
+				if type(j) == "table" then
+					for m, n in pairs(CuratorItemInfo[k][i]) do
+						if m == args then
+							CuratorItemInfo[k][i][m] = nil;
+							charactersRemoved = charactersRemoved + 1;
+						end
+					end
+				end
+			end
+		end
+		if charactersRemoved > 0 then
+			print(L["ADDON_NAME"] .. args .. L["REMOVE_OUTPUT"]);
+		else
+			print(L["ADDON_NAME"] .. L["REMOVE_INFO"]);
+		end
 	end
 end
 
@@ -382,6 +416,22 @@ frame:SetScript("OnEvent", function(self, event, ...)
 			for k, v in ipairs(CuratorSellListPerCharacter) do
 				if v == j then
 					table.remove(CuratorSellListPerCharacter, k);
+				end
+			end
+		end
+		
+		-- If a character is labeled as having 0 of an item, then remove them from the item count.
+		for k, v in pairs(CuratorItemInfo) do
+			for i, j in pairs(CuratorItemInfo[k]) do
+				if type(j) == "table" then
+					if next(j) == nil then -- If the item count table is empty, then simply remove the item from the database.
+						CuratorItemInfo[k] = nil;
+					end
+					for m, n in pairs(CuratorItemInfo[k][i]) do
+						if n == 0 then
+							CuratorItemInfo[k][i][m] = nil;
+						end
+					end
 				end
 			end
 		end
