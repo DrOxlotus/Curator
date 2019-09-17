@@ -1,0 +1,2 @@
+- Added two new commands: lookup, remove (See https://github.com/DrOxlotus/Curator/wiki/Default for all of the details.)
+- Fixed a syntax mistake.
