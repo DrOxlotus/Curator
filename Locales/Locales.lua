@@ -18,6 +18,14 @@ curatorNS.L = L;
 local LOCALE = GetLocale();
 
 if LOCALE == "enUS" or LOCALE == "enGB" then -- EU/US English
+	-- COMMANDS
+	L["CMD_LOOKUP"] = "lookup";
+	L["CMD_REMOVE"] = "remove";
+	-- COMMANDS INFO
+	L["LOOKUP_INFO_HEADER"] = "Lookup Results for ";
+	L["LOOKUP_INFO"] = "Input must be a number.";
+	L["REMOVE_INFO"] = "Character not found. You may want to format the search like Character-Realm.";
+	L["REMOVE_OUTPUT"] = " removed from the database.";
 	-- GENERAL
 	L["ADDON_NAME"] = "|cff00ccff" .. curator .. "|r: ";
 	L["ADDED_ITEM"] = "Added ";
@@ -46,6 +54,14 @@ if LOCALE == "enUS" or LOCALE == "enGB" then -- EU/US English
 return end;
 
 if LOCALE == "frFR" then -- French
+	-- COMMANDS
+	L["CMD_LOOKUP"] = "chercher";
+	L["CMD_REMOVE"] = "retirer";
+	-- COMMANDS INFO
+	L["LOOKUP_INFO_HEADER"] = "Résultats de recherche pour ";
+	L["LOOKUP_INFO"] = "L'entrée doit être un nombre.";
+	L["REMOVE_INFO"] = "Caractère non trouvé. Vous voudrez peut-être formater la recherche comme Character-Realm.";
+	L["REMOVE_OUTPUT"] = " retiré de la base de données.";
 	-- GENERAL
 	L["ADDON_NAME"] = "|cff00ccff" .. curator .. "|r: ";
 	L["ADDED_ITEM"] = "Ajoutée ";
@@ -74,6 +90,14 @@ if LOCALE == "frFR" then -- French
 return end;
 
 if LOCALE == "deDE" then -- German
+	-- COMMANDS
+	L["CMD_LOOKUP"] = "lookup";
+	L["CMD_REMOVE"] = "entfernen";
+	-- COMMANDS INFO
+	L["LOOKUP_INFO_HEADER"] = "Lookup-Ergebnisse für ";
+	L["LOOKUP_INFO"] = "Eingabe muss eine Zahl sein.";
+	L["REMOVE_INFO"] = "Charakter nicht gefunden. Sie können die Suche wie Character-Realm formatieren möchten.";
+	L["REMOVE_OUTPUT"] = " aus der Datenbank entfernt.";
 	-- GENERAL
 	L["ADDON_NAME"] = "|cff00ccff" .. curator .. "|r: ";
 	L["ADDED_ITEM"] = "Hinzugefügt ";
@@ -102,6 +126,14 @@ if LOCALE == "deDE" then -- German
 return end;
 
 if LOCALE == "ruRU" then -- Russian
+	-- COMMANDS
+	L["CMD_LOOKUP"] = "уважать";
+	L["CMD_REMOVE"] = "удалять";
+	-- COMMANDS INFO
+	L["LOOKUP_INFO_HEADER"] = "Результаты поиска для ";
+	L["LOOKUP_INFO"] = "Вход должен быть числом.";
+	L["REMOVE_INFO"] = "Характер не найден. Нужно отформатировать поиске, как символ мира.";
+	L["REMOVE_OUTPUT"] = " удалено из базы данных.";
 	-- GENERAL
 	L["ADDON_NAME"] = "|cff00ccff" .. curatorClassic .. "|r: ";
 	L["ADDED_ITEM"] = "Добавить ";
